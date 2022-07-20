@@ -74,11 +74,11 @@
     <LibraryPath>B:\prjcts\uni\OpenGLStudy\Libraries\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Libraries\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)headers\;$(SolutionDir)Libraries\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Libraries\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)Libraries\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)headers\;$(SolutionDir)Libraries\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)Libraries\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -140,10 +140,14 @@
   <ItemGroup>
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\fragmentShader.glsl" />
     <None Include="src\shaders\vertexShader.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="headers\shader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
