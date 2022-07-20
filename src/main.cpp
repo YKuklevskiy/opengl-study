@@ -32,7 +32,10 @@ string readFile(string fileName)
 
 void handleInput(GLFWwindow* window)
 {
-	
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 GLuint createAndCompileShader(GLenum shaderType, const char* shaderSource)
@@ -50,11 +53,73 @@ GLuint createAndCompileShader(GLenum shaderType, const char* shaderSource)
 		glGetShaderInfoLog(shader, 512, NULL, shaderCompileInfo);
 		cout << "ERROR: SHADER COMPILATION FAILED\n" << shaderCompileInfo << "\n";
 	}
-
-	cout << "SUCCESS: SHADER COMPILATION SUCCESSFUL\n";
+	else
+		cout << "SUCCESS: SHADER COMPILATION SUCCESSFUL\n";
+	
 	return shader;
 }
 
+GLuint buildShaderProgram(GLuint vertexShader, GLuint fragmentShader)
+{
+	GLuint shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	GLint linkStatus;
+	GLchar programLinkInfo[512];
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linkStatus);
+	if (!linkStatus) {
+		glGetProgramInfoLog(shaderProgram, 512, NULL, programLinkInfo);
+		cout << "ERROR: SHADER PROGRAM LINKING FAILED\n" << programLinkInfo << "\n";
+	}
+	else
+	{
+		cout << "SUCCESS: SHADER PROGRAM LINKING SUCCESSFUL\n";
+
+		glDeleteShader(vertexShader);
+		glDeleteShader(fragmentShader);
+	}
+
+	return shaderProgram;
+}
+
+void createAndBindVAO(GLuint& VAO)
+{
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+}
+
+template <size_t n>
+void createAndBindVBO(GLuint& VBO, GLfloat (&vertexArray)[n])
+{
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
+}
+
+struct VertexAttribute
+{
+	GLuint index;
+	GLint size;
+	GLenum type;
+	GLboolean normalized;
+	GLsizei stride;
+	GLvoid* offset;
+};
+
+void setupVertexAttribute(VertexAttribute attribute)
+{
+	glEnableVertexAttribArray(attribute.index);
+	glVertexAttribPointer(
+		attribute.index, 
+		attribute.size, 
+		attribute.type, 
+		attribute.normalized, 
+		attribute.stride, 
+		attribute.offset
+	);
+}
 
 int main()
 {
@@ -87,7 +152,6 @@ int main()
 
 	//
 	//		Create and compile shaders, then link them in shader program
-	//		TODO: divide and encapsulate code into functions for readability
 	//
 
 	// Vertex shader
@@ -99,54 +163,39 @@ int main()
 	GLuint fragmentShader = createAndCompileShader(GL_FRAGMENT_SHADER, fragmentShaderFile.c_str());
 
 	// Shader program
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	GLint linkStatus;
-	GLchar programLinkInfo[512];
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linkStatus);
-	if (!linkStatus) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, programLinkInfo);
-		cout << "ERROR: SHADER PROGRAM LINKING FAILED\n" << programLinkInfo << "\n";
-	}
-	else
-		cout << "SUCCESS: SHADER PROGRAM LINKING SUCCESSFUL\n";
-
-	// cleanup
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
+	GLuint shaderProgram = buildShaderProgram(vertexShader, fragmentShader);
 	glUseProgram(shaderProgram);
 
 	GLfloat triangleVertexArray[] =
 	{
-		-0.5f, -0.5f,
-		 0.0f,  0.5f,
-		 0.5f, -0.5f
+//	    __position__  _____color______
+		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 
+		 0.0f,  0.5f, 0.0f, 1.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f
 	};
 
 	//
-	// Setup data buffer
+	//		Setup data buffer
 	//
 
 	// Create and bind VAO (which will store VBO and attributes)
 	GLuint VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	createAndBindVAO(VAO);
 
 	// Create and bind VBO
 	GLuint VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertexArray), triangleVertexArray, GL_STATIC_DRAW);
+	createAndBindVBO(VBO, triangleVertexArray);
 
 	// Setup vertex attributes
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glEnableVertexAttribArray(0);
+	VertexAttribute positionAttribute = { 0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0 };
+	setupVertexAttribute(positionAttribute);
 
+	VertexAttribute colorAttribute = { 1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)) };
+	setupVertexAttribute(colorAttribute);
 
+	//
+	//		Frame Loop
+	//
 
 	while (!glfwWindowShouldClose(window)) 
 	{
@@ -155,7 +204,7 @@ int main()
 		glClearColor(0.09f, 0.09f, 0.09f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//glBindVertexArray(VAO);
+		//glBindVertexArray(VAO); //not needed if we use just one shader program
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 
