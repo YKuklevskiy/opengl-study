@@ -86,7 +86,7 @@ int main()
 	gladLoadGL();
 
 	//
-	//		Create and compile shaders
+	//		Create and compile shaders, then link them in shader program
 	//		TODO: divide and encapsulate code into functions for readability
 	//
 
@@ -114,10 +114,39 @@ int main()
 	else
 		cout << "SUCCESS: SHADER PROGRAM LINKING SUCCESSFUL\n";
 
+	// cleanup
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
 	glUseProgram(shaderProgram);
+
+	GLfloat triangleVertexArray[] =
+	{
+		-0.5f, -0.5f,
+		 0.0f,  0.5f,
+		 0.5f, -0.5f
+	};
+
+	//
+	// Setup data buffer
+	//
+
+	// Create and bind VAO (which will store VBO and attributes)
+	GLuint VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	// Create and bind VBO
+	GLuint VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertexArray), triangleVertexArray, GL_STATIC_DRAW);
+
+	// Setup vertex attributes
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glEnableVertexAttribArray(0);
+
+
 
 	while (!glfwWindowShouldClose(window)) 
 	{
@@ -126,6 +155,8 @@ int main()
 		glClearColor(0.09f, 0.09f, 0.09f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		//glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 
 		glfwSwapBuffers(window);
