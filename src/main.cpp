@@ -1,9 +1,13 @@
 #include <iostream>
 #include <fstream>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <string>
 #include <sstream>
+
+#define STB_IMAGE_IMPLEMENTATION
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <stb_image/stb_image.h>
 
 #include "shader.h"
 #include "VBO.h"
@@ -63,17 +67,41 @@ int main()
 	}
 	shaderProgram.use();
 
-	GLfloat triangleVertexArray[] =
+	//
+	//		Load textures
+	//
+
+	int textureWidth, textureHeight, textureChannelsCount;
+	GLubyte* textureData = stbi_load("textures/doom_brick.png",
+		&textureWidth, &textureHeight, &textureChannelsCount, 4);
+
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	if (textureData)// generate texture
 	{
-//	    __position__  _____color______
-		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 
-		 0.0f,  0.5f, 0.0f, 1.0f, 0.0f,
-		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f
-	};
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		cout << "SUCCESS: TEXTURE LOADED\n";
+	}
+	else
+		cout << "ERROR: COULD NOT READ TEXTURE FILE\n";
+
+	stbi_image_free(textureData);
 
 	//
 	//		Setup data buffer
 	//
+
+	GLfloat triangleVertexArray[] =
+	{
+//	    __position__    texturecoords
+		-0.5f, -0.5f,    -1.0f, -1.0f,
+		 0.0f,  0.5f,    0.5f, 2.0f,
+		 0.5f, -0.5f,    2.0f, -1.0f, 
+	};
 
 	// Create and bind VAO (which will store VBO and attributes)
 	VAO vao;
@@ -84,11 +112,11 @@ int main()
 	vbo.bufferData(triangleVertexArray);
 
 	// Setup vertex attributes
-	VertexAttribute positionAttribute = { 0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0 };
+	VertexAttribute positionAttribute = { 0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)0 };
 	vao.setupVertexAttribute(positionAttribute);
 
-	VertexAttribute colorAttribute = { 1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)) };
-	vao.setupVertexAttribute(colorAttribute);
+	VertexAttribute textureCoordinateAttribute = { 1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)) };
+	vao.setupVertexAttribute(textureCoordinateAttribute);
 
 	//
 	//		Frame Loop
@@ -102,6 +130,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		vao.bind();
+		glBindTexture(GL_TEXTURE_2D, texture);
 		shaderProgram.use();
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
