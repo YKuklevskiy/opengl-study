@@ -6,6 +6,8 @@
 #include <sstream>
 
 #include "shader.h"
+#include "VBO.h"
+#include "VAO.h"
 
 using std::cout;
 using std::string;
@@ -21,43 +23,6 @@ void handleInput(GLFWwindow* window)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-}
-
-void createAndBindVAO(GLuint& VAO)
-{
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-}
-
-template <size_t n>
-void createAndBindVBO(GLuint& VBO, GLfloat (&vertexArray)[n])
-{
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
-}
-
-struct VertexAttribute
-{
-	GLuint index;
-	GLint size;
-	GLenum type;
-	GLboolean normalized;
-	GLsizei stride;
-	GLvoid* offset;
-};
-
-void setupVertexAttribute(VertexAttribute attribute)
-{
-	glEnableVertexAttribArray(attribute.index);
-	glVertexAttribPointer(
-		attribute.index, 
-		attribute.size, 
-		attribute.type, 
-		attribute.normalized, 
-		attribute.stride, 
-		attribute.offset
-	);
 }
 
 int main()
@@ -111,19 +76,19 @@ int main()
 	//
 
 	// Create and bind VAO (which will store VBO and attributes)
-	GLuint VAO;
-	createAndBindVAO(VAO);
+	VAO vao;
+	vao.bind();
 
 	// Create and bind VBO
-	GLuint VBO;
-	createAndBindVBO(VBO, triangleVertexArray);
+	VBO vbo;
+	vbo.bufferData(triangleVertexArray);
 
 	// Setup vertex attributes
 	VertexAttribute positionAttribute = { 0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0 };
-	setupVertexAttribute(positionAttribute);
+	vao.setupVertexAttribute(positionAttribute);
 
 	VertexAttribute colorAttribute = { 1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)) };
-	setupVertexAttribute(colorAttribute);
+	vao.setupVertexAttribute(colorAttribute);
 
 	//
 	//		Frame Loop
@@ -136,7 +101,7 @@ int main()
 		glClearColor(0.09f, 0.09f, 0.09f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glBindVertexArray(VAO);
+		vao.bind();
 		shaderProgram.use();
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
