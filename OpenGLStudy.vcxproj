@@ -153,6 +153,7 @@
     <ClInclude Include="headers\VAO.h" />
     <ClInclude Include="headers\VBO.h" />
     <ClInclude Include="headers\vertexAttribute.h" />
+    <ClInclude Include="Libraries\include\stb_image\stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
