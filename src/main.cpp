@@ -25,6 +25,8 @@ void handleInput(GLFWwindow* window)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+const GLfloat OFFSET_X = 0.5f;
+
 int main()
 {
 	if (glfwInit() == GLFW_FALSE)
@@ -100,6 +102,8 @@ int main()
 
 		glClearColor(0.09f, 0.09f, 0.09f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		shaderProgram.setFloat("offset", OFFSET_X);
 
 		vao.bind();
 		shaderProgram.use();
