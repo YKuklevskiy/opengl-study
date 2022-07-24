@@ -150,17 +150,10 @@ int main()
 	//		Frame Loop
 	//
 
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-
 	vao.bind();
 	shaderProgram.setInt("_texture", 0);
 	shaderProgram.setInt("_normalTexture", 1);
 	shaderProgram.use();
-
 
 	while (!glfwWindowShouldClose(window)) 
 	{
