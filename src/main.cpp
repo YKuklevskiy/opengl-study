@@ -137,14 +137,14 @@ int main()
 
 	// Create and bind VBO
 	VBO vbo;
+	vbo.bind();
 	vbo.bufferData(triangleVertexArray);
 
 	// Setup vertex attributes
-	VertexAttribute positionAttribute = { 0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)0 };
-	vao.setupVertexAttribute(positionAttribute);
-
-	VertexAttribute textureCoordinateAttribute = { 1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)) };
-	vao.setupVertexAttribute(textureCoordinateAttribute);
+	VertexAttributeLayout layout;
+	layout.AddAttribute<GLfloat>(2);
+	layout.AddAttribute<GLfloat>(2);
+	vao.setupVertexAttributes(layout);
 
 	//
 	//		Frame Loop

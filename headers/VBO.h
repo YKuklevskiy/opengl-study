@@ -15,7 +15,7 @@ public:
 
 private:
 	GLuint _id;
-	size_t _bufferSize;
+	size_t _bufferSize = 0;
 };
 
 template<size_t n, typename T>

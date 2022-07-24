@@ -143,6 +143,7 @@
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\VAO.cpp" />
     <ClCompile Include="src\VBO.cpp" />
+    <ClCompile Include="src\vertexAttributeLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\fragmentShader.glsl" />
@@ -153,6 +154,7 @@
     <ClInclude Include="headers\VAO.h" />
     <ClInclude Include="headers\VBO.h" />
     <ClInclude Include="headers\vertexAttribute.h" />
+    <ClInclude Include="headers\vertexAttributeLayout.h" />
     <ClInclude Include="Libraries\include\stb_image\stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2,16 +2,17 @@
 
 #include <glad/glad.h>
 
-#include "vertexAttribute.h"
+#include "vertexAttributeLayout.h"
 
 class VAO
 {
 public:
 	VAO();
 
-	void bind();
+	void bind() const;
+	void unbind() const;
 
-	void setupVertexAttribute(VertexAttribute attribute);
+	void setupVertexAttributes(VertexAttributeLayout layout);
 
 private:
 	GLuint _id;
