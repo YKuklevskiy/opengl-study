@@ -24,9 +24,9 @@ public:
 		totalStride += valueCount * sizeof(GLfloat);
 	}
 
-	const std::vector<VertexAttribute>& const getAttributes();
+	const std::vector<VertexAttribute>& const getAttributes() const;
 
-	GLsizei getStride();
+	GLsizei getStride() const;
 
 private:
 	std::vector<VertexAttribute> attributes;

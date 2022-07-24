@@ -7,8 +7,8 @@ class VBO
 public:
 	VBO();
 
-	void bind();
-	void unbind();
+	void bind() const;
+	void unbind() const;
 
 	template <size_t n, typename T>
 	void bufferData(T(&vertexArray)[n]);

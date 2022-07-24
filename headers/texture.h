@@ -12,9 +12,9 @@ class Texture
 public:
 	Texture(string texturePath, GLenum unit);
 
-	void bind();
+	void bind() const;
 	void setFiltering(GLenum minifyingFilter,
-		GLenum magnifyingFilter);
+		GLenum magnifyingFilter) const;
 
 	bool isValid() const;
 

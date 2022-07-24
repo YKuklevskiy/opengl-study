@@ -24,13 +24,13 @@ Texture::Texture(string texturePath, GLenum unit)
 	stbi_image_free(data);
 }
 
-void Texture::bind()
+void Texture::bind() const
 {
 	glActiveTexture(_unit);
 	glBindTexture(GL_TEXTURE_2D, _id);
 }
 
-void Texture::setFiltering(GLenum minifyingFilter, GLenum magnifyingFilter)
+void Texture::setFiltering(GLenum minifyingFilter, GLenum magnifyingFilter) const
 {
 	bind();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minifyingFilter);

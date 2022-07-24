@@ -12,7 +12,7 @@ public:
 	void bind() const;
 	void unbind() const;
 
-	void setupVertexAttributes(VertexAttributeLayout layout);
+	void setupVertexAttributes(VertexAttributeLayout layout) const;
 
 private:
 	GLuint _id;

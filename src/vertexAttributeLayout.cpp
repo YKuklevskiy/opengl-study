@@ -11,12 +11,12 @@ GLuint VertexAttributeLayout::getSizeOfType(GLenum type)
 	}
 }
 
-const std::vector<VertexAttribute>& const VertexAttributeLayout::getAttributes()
+const std::vector<VertexAttribute>& const VertexAttributeLayout::getAttributes() const
 {
 	return attributes;
 }
 
-GLsizei VertexAttributeLayout::getStride()
+GLsizei VertexAttributeLayout::getStride() const
 {
 	return totalStride;
 }

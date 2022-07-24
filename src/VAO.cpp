@@ -15,7 +15,7 @@ void VAO::unbind() const
 	glBindVertexArray(_id);
 }
 
-void VAO::setupVertexAttributes(VertexAttributeLayout layout)
+void VAO::setupVertexAttributes(VertexAttributeLayout layout) const
 {
 	bind(); // TODO maybe implement observer pattern and only setup if this VAO is currently bound
 

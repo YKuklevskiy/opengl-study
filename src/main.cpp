@@ -71,9 +71,23 @@ int main()
 	//
 
 	Texture texture1("brick.jpg", GL_TEXTURE0);
+	if (!texture1.isValid())
+	{
+		cout << "Failed to load texture. Terminating...\n";
+		glfwTerminate();
+		return -1;
+	}
 	texture1.setFiltering(GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
 	Texture texture2("brick_normal.jpg", GL_TEXTURE1);
+	if (!texture2.isValid())
+	{
+		cout << "Failed to load texture. Terminating...\n";
+		glfwTerminate();
+		return -1;
+	}
 	texture2.setFiltering(GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
+
+	/////// TODO Too much checking for validity, need to implement GL error checking and asserting ///////
 
 	//
 	//		Setup data buffer
