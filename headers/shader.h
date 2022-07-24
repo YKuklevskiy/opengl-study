@@ -14,18 +14,18 @@ class Shader
 {
 public:
 	// Shader paths are looked up relatively to the shader folder.
-	// For example, if your shader is in the root of shaders folder,
+	// For example, if your shader is right in src/shaders/ folder,
 	// you just need to pass the name of the file.
 	Shader(string vertexShaderPath, string fragmentShaderPath);
 
-	void use();
+	void use() const;
 	
-	void setBool(const string& const name, GLboolean value);
-	void setInt(const string& const name, GLint value);
-	void setFloat(const string& const name, GLfloat value);
+	void setBool(const string& const name, GLboolean value) const;
+	void setInt(const string& const name, GLint value) const;
+	void setFloat(const string& const name, GLfloat value) const;
 
-	GLuint getID();
-	bool isValid();
+	GLuint getID() const;
+	bool isValid() const;
 
 private:
 	GLuint _id;

@@ -141,8 +141,10 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\shader.cpp" />
+    <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\VAO.cpp" />
     <ClCompile Include="src\VBO.cpp" />
+    <ClCompile Include="src\vertexAttributeLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\fragmentShader.glsl" />
@@ -150,9 +152,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\shader.h" />
+    <ClInclude Include="headers\texture.h" />
     <ClInclude Include="headers\VAO.h" />
     <ClInclude Include="headers\VBO.h" />
     <ClInclude Include="headers\vertexAttribute.h" />
+    <ClInclude Include="headers\vertexAttributeLayout.h" />
     <ClInclude Include="Libraries\include\stb_image\stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -20,32 +20,32 @@ Shader::Shader(string vertexShaderPath, string fragmentShaderPath)
 	glDeleteShader(fragmentShader);
 }
 
-void Shader::use()
+void Shader::use() const
 {
 	glUseProgram(_id);
 }
 
-void Shader::setBool(const string& const name, GLboolean value)
+void Shader::setBool(const string& const name, GLboolean value) const
 {
 	glUniform1i(glGetUniformLocation(_id, name.c_str()), (GLint)value);
 }
 
-void Shader::setInt(const string& const name, GLint value)
+void Shader::setInt(const string& const name, GLint value) const
 {
 	glUniform1i(glGetUniformLocation(_id, name.c_str()), value);
 }
 
-void Shader::setFloat(const string& const name, GLfloat value)
+void Shader::setFloat(const string& const name, GLfloat value) const
 {
 	glUniform1f(glGetUniformLocation(_id, name.c_str()), value);
 }
 
-GLuint Shader::getID()
+GLuint Shader::getID() const
 {
 	return _id;
 }
 
-bool Shader::isValid()
+bool Shader::isValid() const
 {
 	return _valid;
 }
