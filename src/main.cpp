@@ -3,15 +3,13 @@
 #include <string>
 #include <sstream>
 
-#define STB_IMAGE_IMPLEMENTATION
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <stb_image/stb_image.h>
 
 #include "shader.h"
 #include "VBO.h"
 #include "VAO.h"
+#include "texture.h"
 
 using std::cout;
 using std::string;
@@ -34,6 +32,7 @@ int main()
 	if (glfwInit() == GLFW_FALSE)
 		return -1;
 
+	// Flags and hints
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -50,7 +49,7 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		cout << "Failed to initialize GLAD. Terminating...\n";
 		glfwTerminate();
@@ -69,55 +68,12 @@ int main()
 
 	//
 	//		Load textures
-	//	TODO: encapsulate working with textures into class
 	//
 
-	stbi_set_flip_vertically_on_load(true);
-
-	int textureWidth, textureHeight, textureChannelsCount;
-	GLubyte* textureData = stbi_load("textures/brick.jpg",
-		&textureWidth, &textureHeight, &textureChannelsCount, 4);
-
-	GLuint texture1;
-	glGenTextures(1, &texture1);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	
-	if (textureData) // generate texture
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		cout << "SUCCESS: TEXTURE LOADED\n";
-	}
-	else
-		cout << "ERROR: COULD NOT READ TEXTURE FILE\n";
-
-	stbi_image_free(textureData);
-
-	textureData = stbi_load("textures/brick_normal.jpg",
-		&textureWidth, &textureHeight, &textureChannelsCount, 4);
-
-	GLuint texture2;
-	glGenTextures(1, &texture2);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	if (textureData) // generate texture
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		cout << "SUCCESS: TEXTURE LOADED\n";
-	}
-	else
-		cout << "ERROR: COULD NOT READ TEXTURE FILE\n";
-
-	stbi_image_free(textureData);
+	Texture texture1("brick.jpg", GL_TEXTURE0);
+	texture1.setFiltering(GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
+	Texture texture2("brick_normal.jpg", GL_TEXTURE1);
+	texture2.setFiltering(GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
 
 	//
 	//		Setup data buffer
@@ -125,10 +81,10 @@ int main()
 
 	GLfloat triangleVertexArray[] =
 	{
-//	    __position__    texturecoords
-		-0.5f, -0.5f,     0.0f,  0.0f,
-		 0.0f,  0.5f,     0.5f,  1.0f,
-		 0.5f, -0.5f,     1.0f,  0.0f, 
+		// position     texturecoords
+		-0.5f, -0.5f,    0.0f,  0.0f,
+		 0.0f,  0.5f,    0.5f,  1.0f,
+		 0.5f, -0.5f,    1.0f,  0.0f,
 	};
 
 	// Create and bind VAO (which will store VBO and attributes)
@@ -142,8 +98,8 @@ int main()
 
 	// Setup vertex attributes
 	VertexAttributeLayout layout;
-	layout.AddAttribute<GLfloat>(2);
-	layout.AddAttribute<GLfloat>(2);
+	layout.AddAttribute<GLfloat>(2); // position
+	layout.AddAttribute<GLfloat>(2); // texCoords
 	vao.setupVertexAttributes(layout);
 
 	//
@@ -155,7 +111,7 @@ int main()
 	shaderProgram.setInt("_normalTexture", 1);
 	shaderProgram.use();
 
-	while (!glfwWindowShouldClose(window)) 
+	while (!glfwWindowShouldClose(window))
 	{
 		handleInput(window);
 
@@ -169,9 +125,9 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(window);
-		glfwPollEvents(); 
+		glfwPollEvents();
 	}
-	
+
 	glfwTerminate();
 	return 0;
 }

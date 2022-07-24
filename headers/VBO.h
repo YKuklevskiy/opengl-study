@@ -11,7 +11,7 @@ public:
 	void unbind();
 
 	template <size_t n, typename T>
-	void bufferData(T (&vertexArray)[n]);
+	void bufferData(T(&vertexArray)[n]);
 
 private:
 	GLuint _id;

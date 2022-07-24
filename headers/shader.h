@@ -14,7 +14,7 @@ class Shader
 {
 public:
 	// Shader paths are looked up relatively to the shader folder.
-	// For example, if your shader is in the root of shaders folder,
+	// For example, if your shader is right in src/shaders/ folder,
 	// you just need to pass the name of the file.
 	Shader(string vertexShaderPath, string fragmentShaderPath);
 
