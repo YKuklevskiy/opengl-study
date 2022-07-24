@@ -69,18 +69,44 @@ int main()
 
 	//
 	//		Load textures
+	//	TODO: encapsulate working with textures into class
 	//
 
+	stbi_set_flip_vertically_on_load(true);
+
 	int textureWidth, textureHeight, textureChannelsCount;
-	GLubyte* textureData = stbi_load("textures/doom_brick.png",
+	GLubyte* textureData = stbi_load("textures/brick.jpg",
 		&textureWidth, &textureHeight, &textureChannelsCount, 4);
 
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	GLuint texture1;
+	glGenTextures(1, &texture1);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture1);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	
+	if (textureData) // generate texture
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		cout << "SUCCESS: TEXTURE LOADED\n";
+	}
+	else
+		cout << "ERROR: COULD NOT READ TEXTURE FILE\n";
+
+	stbi_image_free(textureData);
+
+	textureData = stbi_load("textures/brick_normal.jpg",
+		&textureWidth, &textureHeight, &textureChannelsCount, 4);
+
+	GLuint texture2;
+	glGenTextures(1, &texture2);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 	if (textureData) // generate texture
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
@@ -124,6 +150,18 @@ int main()
 	//		Frame Loop
 	//
 
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
+	vao.bind();
+	shaderProgram.setInt("_texture", 0);
+	shaderProgram.setInt("_normalTexture", 1);
+	shaderProgram.use();
+
+
 	while (!glfwWindowShouldClose(window)) 
 	{
 		handleInput(window);
@@ -131,9 +169,10 @@ int main()
 		glClearColor(0.09f, 0.09f, 0.09f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		vao.bind();
-		glBindTexture(GL_TEXTURE_2D, texture);
-		shaderProgram.use();
+		const float speedModifier = 2.0f;
+		float time = sin(glfwGetTime() * speedModifier) * 0.5f + 0.5f;
+		shaderProgram.setFloat("time", time);
+
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(window);
