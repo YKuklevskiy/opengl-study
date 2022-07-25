@@ -8,6 +8,7 @@ class VAO
 {
 public:
 	VAO();
+	~VAO();
 
 	void bind() const;
 	void unbind() const;

@@ -11,6 +11,7 @@ class Texture
 {
 public:
 	Texture(string texturePath, GLenum unit);
+	~Texture();
 
 	void bind() const;
 	void setFiltering(GLenum minifyingFilter,

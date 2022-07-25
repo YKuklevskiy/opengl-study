@@ -5,6 +5,12 @@ VAO::VAO()
 	glGenVertexArrays(1, &_id);
 }
 
+VAO::~VAO()
+{
+	unbind();
+	glDeleteVertexArrays(1, &_id);
+}
+
 void VAO::bind() const
 {
 	glBindVertexArray(_id);
@@ -12,7 +18,7 @@ void VAO::bind() const
 
 void VAO::unbind() const
 {
-	glBindVertexArray(_id);
+	glBindVertexArray(0);
 }
 
 void VAO::setupVertexAttributes(VertexAttributeLayout layout) const

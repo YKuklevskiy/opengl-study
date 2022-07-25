@@ -5,6 +5,12 @@ VBO::VBO()
 	glGenBuffers(1, &_id);
 }
 
+VBO::~VBO()
+{
+	unbind();
+	glDeleteBuffers(1, &_id);
+}
+
 void VBO::bind() const
 {
 	glBindBuffer(GL_ARRAY_BUFFER, _id);

@@ -17,6 +17,7 @@ public:
 	// For example, if your shader is right in src/shaders/ folder,
 	// you just need to pass the name of the file.
 	Shader(string vertexShaderPath, string fragmentShaderPath);
+	~Shader();
 
 	void use() const;
 	
@@ -29,7 +30,7 @@ public:
 
 private:
 	GLuint _id;
-	bool _valid;
+	bool _valid = true;
 	static const string SHADER_FOLDER_PATH;
 
 	string _readFile(string fileName);

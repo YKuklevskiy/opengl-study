@@ -4,8 +4,6 @@ const string Shader::SHADER_FOLDER_PATH = "src/shaders/";
 
 Shader::Shader(string vertexShaderPath, string fragmentShaderPath)
 {
-	_valid = true;
-
 	// Load and compile shaders
 	string vertexShaderFile = _readFile(SHADER_FOLDER_PATH + vertexShaderPath);
 	GLuint vertexShader = _initShader(GL_VERTEX_SHADER, vertexShaderFile.c_str());
@@ -18,6 +16,12 @@ Shader::Shader(string vertexShaderPath, string fragmentShaderPath)
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+}
+
+Shader::~Shader()
+{
+	glUseProgram(0);
+	glDeleteProgram(_id);
 }
 
 void Shader::use() const

@@ -24,6 +24,11 @@ Texture::Texture(string texturePath, GLenum unit)
 	stbi_image_free(data);
 }
 
+Texture::~Texture()
+{
+	glDeleteTextures(1, &_id);
+}
+
 void Texture::bind() const
 {
 	glActiveTexture(_unit);

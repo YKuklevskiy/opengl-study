@@ -6,6 +6,7 @@ class VBO
 {
 public:
 	VBO();
+	~VBO();
 
 	void bind() const;
 	void unbind() const;
