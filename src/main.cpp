@@ -27,6 +27,11 @@ void handleInput(GLFWwindow* window)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
+
 int main()
 {
 	if (glfwInit() == GLFW_FALSE)
@@ -49,6 +54,8 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		cout << "Failed to initialize GLAD. Terminating...\n";
