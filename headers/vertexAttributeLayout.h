@@ -30,6 +30,5 @@ public:
 
 private:
 	std::vector<VertexAttribute> attributes;
-	unsigned int attributeCount;
-	GLsizei totalStride;
+	GLsizei totalStride = 0;
 };

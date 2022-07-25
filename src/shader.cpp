@@ -1,4 +1,5 @@
 #include "shader.h"
+#include <glm/gtc/type_ptr.hpp>
 
 const string Shader::SHADER_FOLDER_PATH = "src/shaders/";
 
@@ -42,6 +43,11 @@ void Shader::setInt(const string& const name, GLint value) const
 void Shader::setFloat(const string& const name, GLfloat value) const
 {
 	glUniform1f(glGetUniformLocation(_id, name.c_str()), value);
+}
+
+void Shader::setMat4f(const string& const name, const glm::mat4& value) const
+{
+	glUniformMatrix4fv(glGetUniformLocation(_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 GLuint Shader::getID() const

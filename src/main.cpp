@@ -5,6 +5,9 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "shader.h"
 #include "VBO.h"
@@ -140,8 +143,11 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		const float speedModifier = 2.0f;
-		float time = sin(glfwGetTime() * speedModifier) * 0.5f + 0.5f;
-		shaderProgram.setFloat("time", time);
+		float time = sin(glfwGetTime() * speedModifier);
+		glm::mat4 rotMatrix = glm::mat4(1.0f);
+		rotMatrix = glm::rotate(rotMatrix, time, glm::vec3(0.0f, 0.0f, 1.0f));
+		shaderProgram.setFloat("time", time * 0.5f + 0.5f);
+		shaderProgram.setMat4f("transform", rotMatrix);
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 

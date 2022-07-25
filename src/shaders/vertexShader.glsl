@@ -4,8 +4,10 @@ layout (location=1) in vec2 tex_coord;
 
 out vec2 texCoord;
 
+uniform mat4 transform;
+
 void main()
 {
-	gl_Position = vec4(pos.x, pos.y, 0.0f, 1.0f);
+	gl_Position = transform * vec4(pos, 0.0f, 1.0f);
 	texCoord = tex_coord;
 }

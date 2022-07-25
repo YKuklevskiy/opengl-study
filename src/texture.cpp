@@ -8,7 +8,7 @@ const string Texture::TEXTURE_FOLDER_PATH = "textures/";
 Texture::Texture(string texturePath, GLenum unit)
 	: _unit(unit)
 {
-	stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(true); // temporarily here, should actually be called just once before any of resources loading
 	auto* data = readImageFile(TEXTURE_FOLDER_PATH + texturePath);
 
 	if (_valid)

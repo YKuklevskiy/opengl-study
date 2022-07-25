@@ -32,7 +32,7 @@ void VAO::setupVertexAttributes(VertexAttributeLayout layout) const
 	for (int i = 0; i < attributes.size(); i++)
 	{
 		glEnableVertexAttribArray(i);
-		glVertexAttribPointer(i, attributes[i].size, attributes[i].type, attributes[i].normalized, stride, (void*)offset);
+		glVertexAttribPointer(i, attributes[i].size, attributes[i].type, attributes[i].normalized, stride, (void*) offset);
 		
 		offset += attributes[i].size * VertexAttributeLayout::getSizeOfType(attributes[i].type);
 	}

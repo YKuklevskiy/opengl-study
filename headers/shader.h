@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -24,6 +25,7 @@ public:
 	void setBool(const string& const name, GLboolean value) const;
 	void setInt(const string& const name, GLint value) const;
 	void setFloat(const string& const name, GLfloat value) const;
+	void setMat4f(const string& const name, const glm::mat4& value) const;
 
 	GLuint getID() const;
 	bool isValid() const;
