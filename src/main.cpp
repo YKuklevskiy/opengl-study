@@ -148,18 +148,23 @@ int main()
 		float phase = sin(time * speedModifier);
 		glm::mat4 transformMatrix = glm::mat4(1.0f);
 
-		/*
-		The center of triangle now won't go in circles around the center of the screen.
-		This happens because with that order of operations (first translate and then rotate)
-		the rotation is applied relative to the center of the screen, not the center of
-		the triangle. This results in the wobbly behaviour.
-		*/
 		float translate_x = cos(time) * rotationCircleRadius;
 		float translate_y = sin(time) * rotationCircleRadius;
 
-		transformMatrix = glm::rotate(transformMatrix, phase, glm::vec3(0.0f, 0.0f, 1.0f));
 		transformMatrix = glm::translate(transformMatrix, glm::vec3(translate_x, translate_y, 0.0f));
+		transformMatrix = glm::rotate(transformMatrix, phase, glm::vec3(0.0f, 0.0f, 1.0f));
 		shaderProgram.setFloat("time", phase * 0.5f + 0.5f);
+		shaderProgram.setMat4f("transform", transformMatrix);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		// The second triangle will rotate in the opposite direction and pulse with time instead of rotating.
+
+		float scale = phase * 0.5f + 0.5f;
+
+		transformMatrix = glm::mat4(1.0f);
+		transformMatrix = glm::translate(transformMatrix, glm::vec3(-translate_x, translate_y, 0.0f));
+		transformMatrix = glm::scale(transformMatrix, glm::vec3(scale, scale, scale));
 		shaderProgram.setMat4f("transform", transformMatrix);
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
