@@ -143,11 +143,19 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		const float speedModifier = 2.0f;
-		float time = sin(glfwGetTime() * speedModifier);
-		glm::mat4 rotMatrix = glm::mat4(1.0f);
-		rotMatrix = glm::rotate(rotMatrix, time, glm::vec3(0.0f, 0.0f, 1.0f));
-		shaderProgram.setFloat("time", time * 0.5f + 0.5f);
-		shaderProgram.setMat4f("transform", rotMatrix);
+		const float rotationCircleRadius = 0.25f;
+		float time = glfwGetTime();
+		float phase = sin(time * speedModifier);
+		glm::mat4 transformMatrix = glm::mat4(1.0f);
+
+		// the center of triangle will go in circles around the center of the screen
+		float translate_x = cos(time) * rotationCircleRadius;
+		float translate_y = sin(time) * rotationCircleRadius;
+
+		transformMatrix = glm::translate(transformMatrix, glm::vec3(translate_x, translate_y, 0.0f));
+		transformMatrix = glm::rotate(transformMatrix, phase, glm::vec3(0.0f, 0.0f, 1.0f));
+		shaderProgram.setFloat("time", phase * 0.5f + 0.5f);
+		shaderProgram.setMat4f("transform", transformMatrix);
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
