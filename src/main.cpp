@@ -17,22 +17,59 @@
 using std::cout;
 using std::string;
 
-const int windowHeight = 600;
-const int windowWidth = 800;
+int windowHeight = 600;
+int windowWidth = 800;
+const float FOV = 75.0f;
+
+glm::vec3 position(0.0f, 0.0f, 0.0f);
+glm::vec3 velocity(0.0f, 0.0f, 0.0f);
 
 const string SHADER_FOLDER = "src/shaders/";
 
 void handleInput(GLFWwindow* window)
 {
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	// flip the sign for z because of right handed coord system
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		velocity.z -= 1;
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		velocity.z += 1;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		velocity.x -= 1;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		velocity.x += 1;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		velocity.y += 1;
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+	{
+		velocity.y -= 1;
+	}
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-	glViewport(0, 0, width, height);
+	windowWidth = width;
+	windowHeight = height;
+
+	glViewport(0, 0, windowWidth, windowHeight);
 }
 
 int main()
@@ -135,6 +172,8 @@ int main()
 	shaderProgram.setInt("_normalTexture", 1);
 	shaderProgram.use();
 
+	double curTime = glfwGetTime();
+
 	while (!glfwWindowShouldClose(window))
 	{
 		handleInput(window);
@@ -142,12 +181,29 @@ int main()
 		glClearColor(0.09f, 0.09f, 0.09f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		double prevTime = curTime;
+		curTime = glfwGetTime();
+		float deltaTime = curTime - prevTime; // float might be bad but eh
+
+		const float cameraSpeed = 5.0f;
+
+		position += velocity * deltaTime * cameraSpeed;
+
 		const float speedModifier = 2.0f;
-		float time = sin(glfwGetTime() * speedModifier);
-		glm::mat4 rotMatrix = glm::mat4(1.0f);
-		rotMatrix = glm::rotate(rotMatrix, time, glm::vec3(0.0f, 0.0f, 1.0f));
+		float time = sin(curTime * speedModifier);
+
+		glm::mat4 modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::rotate(modelMatrix, time, glm::normalize(glm::vec3(0.0f, 0.5f, 1.0f)));
+
+		glm::mat4 viewMatrix = glm::mat4(1.0f);
+		viewMatrix = glm::translate(viewMatrix, -position); // we move the world around the camera
+
+		glm::mat4 projectionMatrix = glm::perspective(glm::radians(FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
+
 		shaderProgram.setFloat("time", time * 0.5f + 0.5f);
-		shaderProgram.setMat4f("transform", rotMatrix);
+		shaderProgram.setMat4f("model", modelMatrix);
+		shaderProgram.setMat4f("view", viewMatrix);
+		shaderProgram.setMat4f("projection", projectionMatrix);
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
