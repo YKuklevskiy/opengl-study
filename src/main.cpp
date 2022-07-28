@@ -198,7 +198,7 @@ int main()
 		 0.5f, -0.5f,    1.0f,  0.0f,
 	};
 
-	glm::vec3 positions[] =
+	glm::vec3 triangleScenePositions[] =
 	{
 		glm::vec3(0, 0, 0),
 		glm::vec3(0, 1, 0),
@@ -248,10 +248,10 @@ int main()
 		const float speedModifier = 2.0f;
 		float time = sin(curTime * speedModifier);
 
-		for (int i = 0; i < sizeof(positions) / sizeof(glm::vec3); i++)
+		for (int i = 0; i < sizeof(triangleScenePositions) / sizeof(glm::vec3); i++)
 		{
 			glm::mat4 modelMatrix = glm::mat4(1.0f);
-			modelMatrix = glm::translate(modelMatrix, positions[i]);
+			modelMatrix = glm::translate(modelMatrix, triangleScenePositions[i]);
 			modelMatrix = glm::rotate(modelMatrix, time, glm::normalize(glm::vec3(0.0f, 0.5f, 1.0f)));
 
 			glm::mat4 viewMatrix = glm::mat4(1.0f);

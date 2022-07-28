@@ -13,8 +13,8 @@ void Camera::handleMovement(glm::vec3 offset, float speedModifier)
 
 	// transform offset to be relative to camera
 	glm::mat4 cameraSpaceMatrix = glm::mat4(1.0f);
-	cameraSpaceMatrix = glm::rotate(cameraSpaceMatrix, glm::radians(_pitch), glm::vec3(1, 0, 0));
 	cameraSpaceMatrix = glm::rotate(cameraSpaceMatrix, glm::radians(_yaw + 90.0f), glm::vec3(0, -1, 0));
+	cameraSpaceMatrix = glm::rotate(cameraSpaceMatrix, glm::radians(_pitch), glm::vec3(1, 0, 0));
 	cameraSpaceMatrix = glm::scale(cameraSpaceMatrix, glm::vec3(1, 1, -1)); // right handed coordinate system in opengl
 	offset = cameraSpaceMatrix * glm::vec4(offset, 0.0f);
 
