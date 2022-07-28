@@ -13,6 +13,7 @@
 #include "VBO.h"
 #include "VAO.h"
 #include "texture.h"
+#include "camera.h"
 
 using std::cout;
 using std::string;
@@ -20,29 +21,52 @@ using std::string;
 int windowHeight = 600;
 int windowWidth = 800;
 const float FOV = 75.0f;
+const float initialYaw = -90.0f;
+const float initialPitch = 0.0f;
+const float sensitivity = 0.25f;
+const float cameraSpeed = 4.0f;
+const glm::vec3 initialPosition(0.0f, 0.0f, 2.0f);
+Camera* boundCamera = nullptr;
 
-glm::vec3 position(0.0f, 0.0f, 0.0f);
-glm::vec3 velocity(0.0f, 0.0f, 0.0f);
-
-const string SHADER_FOLDER = "src/shaders/";
-
-void handleInput(GLFWwindow* window)
+void handleInput(GLFWwindow* window, float deltaTime)
 {
+	//
+	// wireframe view
+	//
+
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	
+	//
+	// camera lookaround
+	//
 
-	velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		boundCamera->enableMovement();
+	}
+	else
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		boundCamera->disableMovement();
+	}
 
-	// flip the sign for z because of right handed coord system
+	//
+	// moving around the scene
+	//
+
+	glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		velocity.z -= 1;
+		velocity.z += 1;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		velocity.z += 1;
+		velocity.z -= 1;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
@@ -58,10 +82,12 @@ void handleInput(GLFWwindow* window)
 	{
 		velocity.y += 1;
 	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
 	{
 		velocity.y -= 1;
 	}
+
+	boundCamera->handleMovement(velocity * deltaTime);
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -70,6 +96,18 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 	windowHeight = height;
 
 	glViewport(0, 0, windowWidth, windowHeight);
+}
+
+float lastMouseX = windowWidth / 2, lastMouseY = windowHeight / 2;
+void mouseMoveCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	float xoffset = (xpos - lastMouseX);
+	float yoffset = -(ypos - lastMouseY); // reversed since y-coordinates range from bottom to top
+
+	boundCamera->handleRotation(xoffset, yoffset);
+
+	lastMouseX = xpos;
+	lastMouseY = ypos;
 }
 
 int main()
@@ -94,7 +132,14 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+
+	// enabling raw mouse input
+	if (glfwRawMouseMotionSupported())
+		glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+
+	// binding callback functions
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+	glfwSetCursorPosCallback(window, mouseMoveCallback);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -112,6 +157,11 @@ int main()
 		return -1;
 	}
 	shaderProgram.use();
+	glEnable(GL_DEPTH_TEST);
+
+	boundCamera = new Camera(initialPosition, initialYaw, initialPitch);
+	boundCamera->setSensitivity(sensitivity);
+	boundCamera->setSpeed(cameraSpeed);
 
 	//
 	//		Load textures
@@ -148,6 +198,16 @@ int main()
 		 0.5f, -0.5f,    1.0f,  0.0f,
 	};
 
+	glm::vec3 positions[] =
+	{
+		glm::vec3(0, 0, 0),
+		glm::vec3(0, 1, 0),
+		glm::vec3(0, -1, 0),
+		glm::vec3(1, 0, 0),
+		glm::vec3(-1, 0, 0),
+		glm::vec3(0, 0, -1)
+	};
+
 	// Create and bind VAO (which will store VBO and attributes)
 	VAO vao;
 	vao.bind();
@@ -176,36 +236,38 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
-		handleInput(window);
-
-		glClearColor(0.09f, 0.09f, 0.09f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
 		double prevTime = curTime;
 		curTime = glfwGetTime();
-		float deltaTime = curTime - prevTime; // float might be bad but eh
+		float deltaTime = curTime - prevTime;
 
-		const float cameraSpeed = 5.0f;
+		handleInput(window, deltaTime);
 
-		position += velocity * deltaTime * cameraSpeed;
+		glClearColor(0.09f, 0.09f, 0.09f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		const float speedModifier = 2.0f;
 		float time = sin(curTime * speedModifier);
 
-		glm::mat4 modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::rotate(modelMatrix, time, glm::normalize(glm::vec3(0.0f, 0.5f, 1.0f)));
+		for (int i = 0; i < sizeof(positions) / sizeof(glm::vec3); i++)
+		{
+			glm::mat4 modelMatrix = glm::mat4(1.0f);
+			modelMatrix = glm::translate(modelMatrix, positions[i]);
+			modelMatrix = glm::rotate(modelMatrix, time, glm::normalize(glm::vec3(0.0f, 0.5f, 1.0f)));
 
-		glm::mat4 viewMatrix = glm::mat4(1.0f);
-		viewMatrix = glm::translate(viewMatrix, -position); // we move the world around the camera
+			glm::mat4 viewMatrix = glm::mat4(1.0f);
+			glm::vec3 cameraPosition = boundCamera->getPosition();
+			glm::vec3 cameraDirection = boundCamera->getDirectionVector();
+			viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraDirection, glm::vec3(0, 1, 0));
 
-		glm::mat4 projectionMatrix = glm::perspective(glm::radians(FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
+			glm::mat4 projectionMatrix = glm::perspective(glm::radians(FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
-		shaderProgram.setFloat("time", time * 0.5f + 0.5f);
-		shaderProgram.setMat4f("model", modelMatrix);
-		shaderProgram.setMat4f("view", viewMatrix);
-		shaderProgram.setMat4f("projection", projectionMatrix);
+			shaderProgram.setFloat("time", time * 0.5f + 0.5f);
+			shaderProgram.setMat4f("model", modelMatrix);
+			shaderProgram.setMat4f("view", viewMatrix);
+			shaderProgram.setMat4f("projection", projectionMatrix);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawArrays(GL_TRIANGLES, 0, 3);
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

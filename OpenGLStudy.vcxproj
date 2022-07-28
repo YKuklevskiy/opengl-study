@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\shader.cpp" />
@@ -153,6 +154,7 @@
     <None Include="src\shaders\vertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="headers\camera.h" />
     <ClInclude Include="headers\shader.h" />
     <ClInclude Include="headers\texture.h" />
     <ClInclude Include="headers\VAO.h" />
