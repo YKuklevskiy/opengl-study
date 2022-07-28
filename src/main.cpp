@@ -9,23 +9,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shader.h"
-#include "VBO.h"
-#include "VAO.h"
-#include "texture.h"
-#include "camera.h"
+#include "constants.h"
+#include "GLObjects/shader.h"
+#include "GLObjects/VBO.h"
+#include "GLObjects/VAO.h"
+#include "GLObjects/texture.h"
+#include "GLObjects/camera.h"
 
 using std::cout;
 using std::string;
 
 int windowHeight = 600;
 int windowWidth = 800;
-const float FOV = 75.0f;
-const float initialYaw = -90.0f;
-const float initialPitch = 0.0f;
-const float sensitivity = 0.25f;
-const float cameraSpeed = 4.0f;
-const glm::vec3 initialPosition(0.0f, 0.0f, 2.0f);
 Camera* boundCamera = nullptr;
 
 void handleInput(GLFWwindow* window, float deltaTime)
@@ -159,9 +154,9 @@ int main()
 	shaderProgram.use();
 	glEnable(GL_DEPTH_TEST);
 
-	boundCamera = new Camera(initialPosition, initialYaw, initialPitch);
-	boundCamera->setSensitivity(sensitivity);
-	boundCamera->setSpeed(cameraSpeed);
+	boundCamera = new Camera(INITIAL_POSITION, INITIAL_YAW, INITIAL_PITCH);
+	boundCamera->setSensitivity(SENSITIVITY);
+	boundCamera->setSpeed(CAMERA_SPEED);
 
 	//
 	//		Load textures
@@ -247,6 +242,7 @@ int main()
 
 		const float speedModifier = 2.0f;
 		float time = sin(curTime * speedModifier);
+		shaderProgram.setFloat("time", time * 0.5f + 0.5f);
 
 		for (int i = 0; i < sizeof(triangleScenePositions) / sizeof(glm::vec3); i++)
 		{
@@ -261,7 +257,6 @@ int main()
 
 			glm::mat4 projectionMatrix = glm::perspective(glm::radians(FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
-			shaderProgram.setFloat("time", time * 0.5f + 0.5f);
 			shaderProgram.setMat4f("model", modelMatrix);
 			shaderProgram.setMat4f("view", viewMatrix);
 			shaderProgram.setMat4f("projection", projectionMatrix);

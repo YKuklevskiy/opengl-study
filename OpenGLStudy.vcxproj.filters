@@ -21,22 +21,22 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\shader.cpp">
+    <ClCompile Include="src\GLObjects\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\VBO.cpp">
+    <ClCompile Include="src\GLObjects\VBO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\VAO.cpp">
+    <ClCompile Include="src\GLObjects\VAO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\vertexAttributeLayout.cpp">
+    <ClCompile Include="src\GLObjects\vertexAttributeLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\texture.cpp">
+    <ClCompile Include="src\GLObjects\texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\camera.cpp">
+    <ClCompile Include="src\GLObjects\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -45,28 +45,31 @@
     <None Include="src\shaders\fragmentShader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\shader.h">
+    <ClInclude Include="headers\GLObjects\shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\VBO.h">
+    <ClInclude Include="headers\GLObjects\VBO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\VAO.h">
+    <ClInclude Include="headers\GLObjects\VAO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\vertexAttribute.h">
+    <ClInclude Include="headers\GLObjects\vertexAttribute.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Libraries\include\stb_image\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\vertexAttributeLayout.h">
+    <ClInclude Include="headers\GLObjects\vertexAttributeLayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\texture.h">
+    <ClInclude Include="headers\GLObjects\texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\camera.h">
+    <ClInclude Include="headers\GLObjects\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

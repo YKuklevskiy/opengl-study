@@ -140,27 +140,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\GLObjects\camera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\shader.cpp" />
-    <ClCompile Include="src\texture.cpp" />
-    <ClCompile Include="src\VAO.cpp" />
-    <ClCompile Include="src\VBO.cpp" />
-    <ClCompile Include="src\vertexAttributeLayout.cpp" />
+    <ClCompile Include="src\GLObjects\shader.cpp" />
+    <ClCompile Include="src\GLObjects\texture.cpp" />
+    <ClCompile Include="src\GLObjects\VAO.cpp" />
+    <ClCompile Include="src\GLObjects\VBO.cpp" />
+    <ClCompile Include="src\GLObjects\vertexAttributeLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\fragmentShader.glsl" />
     <None Include="src\shaders\vertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\camera.h" />
-    <ClInclude Include="headers\shader.h" />
-    <ClInclude Include="headers\texture.h" />
-    <ClInclude Include="headers\VAO.h" />
-    <ClInclude Include="headers\VBO.h" />
-    <ClInclude Include="headers\vertexAttribute.h" />
-    <ClInclude Include="headers\vertexAttributeLayout.h" />
+    <ClInclude Include="headers\constants.h" />
+    <ClInclude Include="headers\GLObjects\camera.h" />
+    <ClInclude Include="headers\GLObjects\shader.h" />
+    <ClInclude Include="headers\GLObjects\texture.h" />
+    <ClInclude Include="headers\GLObjects\VAO.h" />
+    <ClInclude Include="headers\GLObjects\VBO.h" />
+    <ClInclude Include="headers\GLObjects\vertexAttribute.h" />
+    <ClInclude Include="headers\GLObjects\vertexAttributeLayout.h" />
     <ClInclude Include="Libraries\include\stb_image\stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

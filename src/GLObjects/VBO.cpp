@@ -1,4 +1,4 @@
-#include "VBO.h"
+#include "GLObjects/VBO.h"
 
 VBO::VBO()
 {

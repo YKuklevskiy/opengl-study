@@ -1,5 +1,11 @@
-#include "shader.h"
+#include "GLObjects/shader.h"
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <glm/gtc/type_ptr.hpp>
+
+using std::cout;
 
 const string Shader::SHADER_FOLDER_PATH = "src/shaders/";
 

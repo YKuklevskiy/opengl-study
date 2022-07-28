@@ -3,12 +3,8 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-#include <iostream>
-#include <fstream>
 #include <string>
-#include <sstream>
 
-using std::cout;
 using std::string;
 
 class Shader

@@ -1,4 +1,4 @@
-#include "VAO.h"
+#include "GLObjects/VAO.h"
 
 VAO::VAO()
 {
