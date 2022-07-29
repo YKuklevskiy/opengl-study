@@ -39,6 +39,9 @@
     <ClCompile Include="src\GLObjects\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GLObjects\EBO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\vertexShader.glsl" />
@@ -70,6 +73,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\GLObjects\EBO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

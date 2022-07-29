@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClCompile Include="src\GLObjects\camera.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\GLObjects\EBO.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\GLObjects\shader.cpp" />
     <ClCompile Include="src\GLObjects\texture.cpp" />
@@ -156,6 +157,7 @@
   <ItemGroup>
     <ClInclude Include="headers\constants.h" />
     <ClInclude Include="headers\GLObjects\camera.h" />
+    <ClInclude Include="headers\GLObjects\EBO.h" />
     <ClInclude Include="headers\GLObjects\shader.h" />
     <ClInclude Include="headers\GLObjects\texture.h" />
     <ClInclude Include="headers\GLObjects\VAO.h" />

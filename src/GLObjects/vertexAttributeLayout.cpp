@@ -1,4 +1,4 @@
-#include "GLObjects/vertexAttributeLayout.h"
+#include <GLObjects/vertexAttributeLayout.h>
 
 GLuint VertexAttributeLayout::getSizeOfType(GLenum type)
 {

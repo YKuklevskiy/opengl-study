@@ -9,12 +9,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "constants.h"
-#include "GLObjects/shader.h"
-#include "GLObjects/VBO.h"
-#include "GLObjects/VAO.h"
-#include "GLObjects/texture.h"
-#include "GLObjects/camera.h"
+#include <constants.h>
+#include <GLObjects/shader.h>
+#include <GLObjects/VBO.h>
+#include <GLObjects/VAO.h>
+#include <GLObjects/EBO.h>
+#include <GLObjects/texture.h>
+#include <GLObjects/camera.h>
 
 using std::cout;
 using std::string;
@@ -144,6 +145,10 @@ int main()
 	}
 	gladLoadGL();
 
+	//
+	//		Load shaders
+	//
+
 	Shader shaderProgram("vertexShader.glsl", "fragmentShader.glsl");
 	if (!shaderProgram.isValid())
 	{
@@ -153,6 +158,10 @@ int main()
 	}
 	shaderProgram.use();
 	glEnable(GL_DEPTH_TEST);
+
+	//
+	//		Setup camera
+	//
 
 	boundCamera = new Camera(INITIAL_POSITION, INITIAL_YAW, INITIAL_PITCH);
 	boundCamera->setSensitivity(SENSITIVITY);
@@ -179,7 +188,7 @@ int main()
 	}
 	texture2.setFiltering(GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
 
-	/////// TODO Too much checking for validity, need to implement GL error checking and asserting ///////
+	/////// TODO Too much checking for validity, need to encapsulate all this setup stuff into Window class ///////
 
 	//
 	//		Setup data buffer
@@ -187,10 +196,15 @@ int main()
 
 	GLfloat triangleVertexArray[] =
 	{
-		// position     texturecoords
-		-0.5f, -0.5f,    0.0f,  0.0f,
-		 0.0f,  0.5f,    0.5f,  1.0f,
-		 0.5f, -0.5f,    1.0f,  0.0f,
+		// position			  texturecoords
+		-0.5f, -0.5f, 0.0f,    0.0f,  0.0f,
+		 0.0f,  0.5f, 0.0f,    0.5f,  1.0f,
+		 0.5f, -0.5f, 0.0f,    1.0f,  0.0f,
+	};
+
+	GLuint indices[] =
+	{
+		0, 1, 2
 	};
 
 	glm::vec3 triangleScenePositions[] =
@@ -212,9 +226,13 @@ int main()
 	vbo.bind();
 	vbo.bufferData(triangleVertexArray);
 
+	EBO ebo;
+	ebo.bind();
+	ebo.bufferData(indices);
+
 	// Setup vertex attributes
 	VertexAttributeLayout layout;
-	layout.AddAttribute<GLfloat>(2); // position
+	layout.AddAttribute<GLfloat>(3); // position
 	layout.AddAttribute<GLfloat>(2); // texCoords
 	vao.setupVertexAttributes(layout);
 
@@ -261,7 +279,8 @@ int main()
 			shaderProgram.setMat4f("view", viewMatrix);
 			shaderProgram.setMat4f("projection", projectionMatrix);
 
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			//glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 		}
 
 		glfwSwapBuffers(window);
