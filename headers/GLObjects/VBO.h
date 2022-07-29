@@ -14,6 +14,8 @@ public:
 	template <size_t n, typename T>
 	void bufferData(T(&vertexArray)[n]);
 
+	size_t getBufferSize() const;
+
 private:
 	GLuint _id;
 	size_t _bufferSize = 0;

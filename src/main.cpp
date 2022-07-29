@@ -16,6 +16,7 @@
 #include <GLObjects/EBO.h>
 #include <GLObjects/texture.h>
 #include <GLObjects/camera.h>
+#include <Renderer.h>
 
 using std::cout;
 using std::string;
@@ -244,6 +245,8 @@ int main()
 	shaderProgram.setInt("_texture", 0);
 	shaderProgram.setInt("_normalTexture", 1);
 	shaderProgram.use();
+	Renderer renderer;
+	renderer.setClearColor(0.09f, 0.09f, 0.09f);
 
 	double curTime = glfwGetTime();
 
@@ -255,8 +258,7 @@ int main()
 
 		handleInput(window, deltaTime);
 
-		glClearColor(0.09f, 0.09f, 0.09f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		renderer.clear();
 
 		const float speedModifier = 2.0f;
 		float time = sin(curTime * speedModifier);
@@ -279,8 +281,8 @@ int main()
 			shaderProgram.setMat4f("view", viewMatrix);
 			shaderProgram.setMat4f("projection", projectionMatrix);
 
-			//glDrawArrays(GL_TRIANGLES, 0, 3);
-			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+			//renderer.drawVertices(shaderProgram, vbo, vao);
+			renderer.drawElements(shaderProgram, vbo, ebo, vao);
 		}
 
 		glfwSwapBuffers(window);

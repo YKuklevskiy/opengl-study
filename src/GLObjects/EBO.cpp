@@ -20,3 +20,8 @@ void EBO::unbind() const
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
+
+size_t EBO::getBufferSize() const
+{
+	return _bufferSize;
+}

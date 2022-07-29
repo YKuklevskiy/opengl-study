@@ -14,6 +14,8 @@ public:
 	template <size_t n>
 	void bufferData(GLuint (&indexArray)[n]);
 
+	size_t getBufferSize() const;
+
 private:
 	GLuint _id;
 	size_t _bufferSize = 0;
