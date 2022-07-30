@@ -206,48 +206,48 @@ int main()
 
 	GLfloat cubeVertexArray[] =
 	{
-		// position			  texturecoords
-		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-							   
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-							   
-		-0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-							   
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-							   
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,   1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
-							   
-		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,   0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f
+		// position			  texturecoords       normals
+		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,   0.0f, 0.0f, -1.0f,
+		 0.5f, -0.5f, -0.5f,   1.0f, 0.0f,   0.0f, 0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f, 0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f, 0.0f, -1.0f,
+		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,   0.0f, 0.0f, -1.0f,
+							   			     
+		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, 0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,   1.0f, 1.0f,   0.0f, 0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,   1.0f, 1.0f,   0.0f, 0.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,   0.0f, 1.0f,   0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, 0.0f, 1.0f,
+							   			     
+		-0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
+							   			     
+		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   1.0f, 0.0f, 0.0f,
+							   			     
+		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   0.0f, -1.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,   1.0f, 1.0f,   0.0f, -1.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, -1.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, -1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, -1.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   0.0f, -1.0f, 0.0f,
+							   			     
+		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   0.0f, 1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,   0.0f, 0.0f,   0.0f, 1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 1.0f, 0.0f
 	};
 
 	/*GLuint indices[] =
@@ -272,6 +272,7 @@ int main()
 	VertexAttributeLayout layout;
 	layout.AddAttribute<GLfloat>(3); // position
 	layout.AddAttribute<GLfloat>(2); // texCoords
+	layout.AddAttribute<GLfloat>(3); // normals
 	vao.setupVertexAttributes(layout);
 
 	//
@@ -282,6 +283,7 @@ int main()
 	objectShader.use();
 	objectShader.setInt("_texture", 0);
 	objectShader.setInt("_normalTexture", 1);
+	objectShader.setFloat("ambientLight", AMBIENT_LIGHT);
 
 	Renderer renderer;
 	renderer.setClearColor(0.09f, 0.09f, 0.09f);
@@ -303,8 +305,8 @@ int main()
 		objectShader.use();
 		objectShader.setFloat("time", time * 0.5f + 0.5f);
 
-		// render test cube
 
+		// setup cube
 		glm::mat4 modelMatrix = glm::mat4(1.0f);
 		modelMatrix = glm::rotate(modelMatrix, time, glm::normalize(glm::vec3(0.0f, 0.5f, 1.0f)));
 
@@ -319,10 +321,7 @@ int main()
 		objectShader.setMat4f("view", viewMatrix);
 		objectShader.setMat4f("projection", projectionMatrix);
 
-		renderer.drawVertices(objectShader, vbo, vao);
-		//renderer.drawElements(objectShader, vbo, ebo, vao);
-
-		// render lightsource cube
+		// setup lightsource cube
 		lightShader.use();
 		
 		modelMatrix = glm::mat4(1.0f);
@@ -335,6 +334,14 @@ int main()
 		lightShader.setMat4f("view", viewMatrix);
 		lightShader.setMat4f("projection", projectionMatrix);
 
+		glm::vec3 lightPosition = modelMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+		objectShader.use();
+		objectShader.setVec3f("lightPosition", lightPosition);
+
+		// render cube
+		renderer.drawVertices(objectShader, vbo, vao);
+		//render lightsource cube
 		renderer.drawVertices(lightShader, vbo, vao);
 
 		glfwSwapBuffers(window);
