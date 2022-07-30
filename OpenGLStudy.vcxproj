@@ -153,6 +153,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\fragmentShader.glsl" />
+    <None Include="src\shaders\lightFragmentShader.glsl" />
+    <None Include="src\shaders\lightVertexShader.glsl" />
     <None Include="src\shaders\vertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>

@@ -150,14 +150,23 @@ int main()
 	//		Load shaders
 	//
 
-	Shader shaderProgram("vertexShader.glsl", "fragmentShader.glsl");
-	if (!shaderProgram.isValid())
+	Shader objectShader("vertexShader.glsl", "fragmentShader.glsl");
+	if (!objectShader.isValid())
 	{
 		cout << "Failed to compile and link shaders. Terminating...\n";
 		glfwTerminate();
 		return -1;
 	}
-	shaderProgram.use();
+	objectShader.use();
+
+	Shader lightShader("lightVertexShader.glsl", "lightFragmentShader.glsl");
+	if (!lightShader.isValid())
+	{
+		cout << "Failed to compile and link shaders. Terminating...\n";
+		glfwTerminate();
+		return -1;
+	}
+
 	glEnable(GL_DEPTH_TEST);
 
 	//
@@ -195,28 +204,56 @@ int main()
 	//		Setup data buffer
 	//
 
-	GLfloat triangleVertexArray[] =
+	GLfloat cubeVertexArray[] =
 	{
-		// position			  texturecoords
-		-0.5f, -0.5f, 0.0f,    0.0f,  0.0f,
-		 0.0f,  0.5f, 0.0f,    0.5f,  1.0f,
-		 0.5f, -0.5f, 0.0f,    1.0f,  0.0f,
+		// position			  texturecoords       normals
+		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,   0.0f, 0.0f, -1.0f,
+		 0.5f, -0.5f, -0.5f,   1.0f, 0.0f,   0.0f, 0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f, 0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f, 0.0f, -1.0f,
+		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,   0.0f, 0.0f, -1.0f,
+							   			     
+		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, 0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,   1.0f, 1.0f,   0.0f, 0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,   1.0f, 1.0f,   0.0f, 0.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,   0.0f, 1.0f,   0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, 0.0f, 1.0f,
+							   			     
+		-0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
+							   			     
+		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   1.0f, 0.0f, 0.0f,
+							   			     
+		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   0.0f, -1.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,   1.0f, 1.0f,   0.0f, -1.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, -1.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, -1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, -1.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   0.0f, -1.0f, 0.0f,
+							   			     
+		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   0.0f, 1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,   0.0f, 0.0f,   0.0f, 1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 1.0f, 0.0f
 	};
 
-	GLuint indices[] =
+	/*GLuint indices[] =
 	{
 		0, 1, 2
-	};
-
-	glm::vec3 triangleScenePositions[] =
-	{
-		glm::vec3(0, 0, 0),
-		glm::vec3(0, 1, 0),
-		glm::vec3(0, -1, 0),
-		glm::vec3(1, 0, 0),
-		glm::vec3(-1, 0, 0),
-		glm::vec3(0, 0, -1)
-	};
+	};*/
 
 	// Create and bind VAO (which will store VBO and attributes)
 	VAO vao;
@@ -225,16 +262,17 @@ int main()
 	// Create and bind VBO
 	VBO vbo;
 	vbo.bind();
-	vbo.bufferData(triangleVertexArray);
+	vbo.bufferData(cubeVertexArray);
 
-	EBO ebo;
+	/*EBO ebo;
 	ebo.bind();
-	ebo.bufferData(indices);
+	ebo.bufferData(indices);*/
 
 	// Setup vertex attributes
 	VertexAttributeLayout layout;
 	layout.AddAttribute<GLfloat>(3); // position
 	layout.AddAttribute<GLfloat>(2); // texCoords
+	layout.AddAttribute<GLfloat>(3); // normals
 	vao.setupVertexAttributes(layout);
 
 	//
@@ -242,9 +280,12 @@ int main()
 	//
 
 	vao.bind();
-	shaderProgram.setInt("_texture", 0);
-	shaderProgram.setInt("_normalTexture", 1);
-	shaderProgram.use();
+	objectShader.use();
+	objectShader.setInt("_texture", 0);
+	objectShader.setInt("_normalTexture", 1);
+	objectShader.setFloat("ambientLight", AMBIENT_LIGHT);
+	objectShader.setFloat("specularStrength", SPECULAR_LIGHT);
+
 	Renderer renderer;
 	renderer.setClearColor(0.09f, 0.09f, 0.09f);
 
@@ -260,30 +301,53 @@ int main()
 
 		renderer.clear();
 
-		const float speedModifier = 2.0f;
+		const float speedModifier = 0.5f;
 		float time = sin(curTime * speedModifier);
-		shaderProgram.setFloat("time", time * 0.5f + 0.5f);
+		objectShader.use();
+		objectShader.setFloat("time", time * 0.5f + 0.5f);
 
-		for (int i = 0; i < sizeof(triangleScenePositions) / sizeof(glm::vec3); i++)
-		{
-			glm::mat4 modelMatrix = glm::mat4(1.0f);
-			modelMatrix = glm::translate(modelMatrix, triangleScenePositions[i]);
-			modelMatrix = glm::rotate(modelMatrix, time, glm::normalize(glm::vec3(0.0f, 0.5f, 1.0f)));
 
-			glm::mat4 viewMatrix = glm::mat4(1.0f);
-			glm::vec3 cameraPosition = boundCamera->getPosition();
-			glm::vec3 cameraDirection = boundCamera->getDirectionVector();
-			viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraDirection, glm::vec3(0, 1, 0));
+		// setup cube
+		glm::mat4 modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::rotate(modelMatrix, time, glm::normalize(glm::vec3(0.0f, 0.5f, 1.0f)));
 
-			glm::mat4 projectionMatrix = glm::perspective(glm::radians(FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
+		glm::mat4 viewMatrix = glm::mat4(1.0f);
+		glm::vec3 cameraPosition = boundCamera->getPosition();
+		glm::vec3 cameraDirection = boundCamera->getDirectionVector();
+		viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraDirection, glm::vec3(0, 1, 0));
 
-			shaderProgram.setMat4f("model", modelMatrix);
-			shaderProgram.setMat4f("view", viewMatrix);
-			shaderProgram.setMat4f("projection", projectionMatrix);
+		glm::mat4 projectionMatrix = glm::perspective(glm::radians(FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
-			//renderer.drawVertices(shaderProgram, vbo, vao);
-			renderer.drawElements(shaderProgram, vbo, ebo, vao);
-		}
+		glm::mat3 normalMatrix = glm::mat3(viewMatrix * modelMatrix); // view space calculations
+		normalMatrix = glm::transpose(glm::inverse(normalMatrix));
+
+		objectShader.setMat4f("model", modelMatrix);
+		objectShader.setMat4f("view", viewMatrix);
+		objectShader.setMat4f("projection", projectionMatrix);
+		objectShader.setMat3f("normalMatrix", normalMatrix);
+
+		// setup lightsource cube
+		lightShader.use();
+		
+		modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::rotate(modelMatrix, (float)curTime, glm::normalize(glm::vec3(1.0f, 0.25f, 0.5f)));
+		modelMatrix = glm::rotate(modelMatrix, (float)curTime * 0.33f, glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f)));
+		modelMatrix = glm::translate(modelMatrix, { 0, 2, 0 });
+		modelMatrix = glm::scale(modelMatrix, { 0.5f, 0.5f, 0.5f });
+
+		lightShader.setMat4f("model", modelMatrix);
+		lightShader.setMat4f("view", viewMatrix);
+		lightShader.setMat4f("projection", projectionMatrix);
+
+		glm::vec3 lightPosition = viewMatrix * modelMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); // view space calc
+
+		objectShader.use();
+		objectShader.setVec3f("lightPosition", lightPosition);
+
+		// render cube
+		renderer.drawVertices(objectShader, vbo, vao);
+		//render lightsource cube
+		renderer.drawVertices(lightShader, vbo, vao);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
