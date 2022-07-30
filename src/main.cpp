@@ -284,6 +284,7 @@ int main()
 	objectShader.setInt("_texture", 0);
 	objectShader.setInt("_normalTexture", 1);
 	objectShader.setFloat("ambientLight", AMBIENT_LIGHT);
+	objectShader.setFloat("specularStrength", SPECULAR_LIGHT);
 
 	Renderer renderer;
 	renderer.setClearColor(0.09f, 0.09f, 0.09f);
@@ -300,7 +301,7 @@ int main()
 
 		renderer.clear();
 
-		const float speedModifier = 2.0f;
+		const float speedModifier = 0.5f;
 		float time = sin(curTime * speedModifier);
 		objectShader.use();
 		objectShader.setFloat("time", time * 0.5f + 0.5f);
@@ -317,7 +318,7 @@ int main()
 
 		glm::mat4 projectionMatrix = glm::perspective(glm::radians(FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
-		glm::mat3 normalMatrix = glm::mat3(modelMatrix);
+		glm::mat3 normalMatrix = glm::mat3(viewMatrix * modelMatrix); // view space calculations
 		normalMatrix = glm::transpose(glm::inverse(normalMatrix));
 
 		objectShader.setMat4f("model", modelMatrix);
@@ -338,7 +339,7 @@ int main()
 		lightShader.setMat4f("view", viewMatrix);
 		lightShader.setMat4f("projection", projectionMatrix);
 
-		glm::vec3 lightPosition = modelMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec3 lightPosition = viewMatrix * modelMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); // view space calc
 
 		objectShader.use();
 		objectShader.setVec3f("lightPosition", lightPosition);
