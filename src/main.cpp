@@ -317,9 +317,13 @@ int main()
 
 		glm::mat4 projectionMatrix = glm::perspective(glm::radians(FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
+		glm::mat3 normalMatrix = glm::mat3(modelMatrix);
+		normalMatrix = glm::transpose(glm::inverse(normalMatrix));
+
 		objectShader.setMat4f("model", modelMatrix);
 		objectShader.setMat4f("view", viewMatrix);
 		objectShader.setMat4f("projection", projectionMatrix);
+		objectShader.setMat3f("normalMatrix", normalMatrix);
 
 		// setup lightsource cube
 		lightShader.use();

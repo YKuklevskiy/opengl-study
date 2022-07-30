@@ -21,6 +21,7 @@ public:
 	void setBool(const string& const name, GLboolean value) const;
 	void setInt(const string& const name, GLint value) const;
 	void setFloat(const string& const name, GLfloat value) const;
+	void setMat3f(const string& const name, const glm::mat3& value) const;
 	void setMat4f(const string& const name, const glm::mat4& value) const;
 	void setVec3f(const string& const name, const glm::vec3& value) const;
 
