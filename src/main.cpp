@@ -16,13 +16,14 @@
 #include <GLObjects/EBO.h>
 #include <GLObjects/texture.h>
 #include <GLObjects/camera.h>
-#include <Renderer.h>
+#include <renderer.h>
+#include <material.h>
 
 using std::cout;
 using std::string;
 
-int windowHeight = 600;
-int windowWidth = 800;
+int windowHeight = 900;
+int windowWidth = 1200;
 Camera* boundCamera = nullptr;
 
 void handleInput(GLFWwindow* window, float deltaTime)
@@ -173,7 +174,7 @@ int main()
 	//		Setup camera
 	//
 
-	boundCamera = new Camera(INITIAL_POSITION, INITIAL_YAW, INITIAL_PITCH);
+	boundCamera = new Camera(INITIAL_CAMERA_POSITION, INITIAL_YAW, INITIAL_PITCH);
 	boundCamera->setSensitivity(SENSITIVITY);
 	boundCamera->setSpeed(CAMERA_SPEED);
 
@@ -283,8 +284,17 @@ int main()
 	objectShader.use();
 	objectShader.setInt("_texture", 0);
 	objectShader.setInt("_normalTexture", 1);
-	objectShader.setFloat("ambientLight", AMBIENT_LIGHT);
-	objectShader.setFloat("specularStrength", SPECULAR_LIGHT);
+
+	Material material(&objectShader);
+	material.ambient = AMBIENT_COLOR;
+	material.diffuse = DIFFUSE_COLOR;
+	material.specular = SPECULAR_COLOR;
+	material.shininess = SHININESS;
+	material.setUniforms("material");
+
+	objectShader.setVec3f("light.ambient", AMBIENT_LIGHT_COLOR);
+	objectShader.setVec3f("light.diffuse", DIFFUSE_LIGHT_COLOR);
+	objectShader.setVec3f("light.specular", SPECULAR_LIGHT_COLOR);
 
 	Renderer renderer;
 	renderer.setClearColor(0.09f, 0.09f, 0.09f);
@@ -330,10 +340,10 @@ int main()
 		lightShader.use();
 		
 		modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::rotate(modelMatrix, (float)curTime, glm::normalize(glm::vec3(1.0f, 0.25f, 0.5f)));
-		modelMatrix = glm::rotate(modelMatrix, (float)curTime * 0.33f, glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f)));
-		modelMatrix = glm::translate(modelMatrix, { 0, 2, 0 });
-		modelMatrix = glm::scale(modelMatrix, { 0.5f, 0.5f, 0.5f });
+		modelMatrix = glm::rotate(modelMatrix, (float)curTime * 0.8f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
+		modelMatrix = glm::rotate(modelMatrix, (float)sin(curTime * 0.5f) * 0.33f, glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f)));
+		modelMatrix = glm::translate(modelMatrix, INITIAL_LIGHT_POSITION);
+		modelMatrix = glm::scale(modelMatrix, { 0.25f, 0.25f, 0.25f });
 
 		lightShader.setMat4f("model", modelMatrix);
 		lightShader.setMat4f("view", viewMatrix);
@@ -342,7 +352,7 @@ int main()
 		glm::vec3 lightPosition = viewMatrix * modelMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); // view space calc
 
 		objectShader.use();
-		objectShader.setVec3f("lightPosition", lightPosition);
+		objectShader.setVec3f("light.position", lightPosition);
 
 		// render cube
 		renderer.drawVertices(objectShader, vbo, vao);
