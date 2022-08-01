@@ -54,6 +54,8 @@
     <None Include="src\shaders\fragmentShader.glsl" />
     <None Include="src\shaders\lightFragmentShader.glsl" />
     <None Include="src\shaders\lightVertexShader.glsl" />
+    <None Include="Libraries\dll\assimp-vc143-mtd.dll" />
+    <None Include="Libraries\dll\assimp-vc143-mt.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\GLObjects\shader.h">
