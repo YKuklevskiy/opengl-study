@@ -18,7 +18,7 @@ enum TextureType
 class Texture
 {
 public:
-	Texture(string texturePath, GLenum unit, TextureType type);
+	Texture(string fullTexturePath, TextureType type);
 	~Texture();
 
 	void bind() const;
@@ -32,9 +32,8 @@ public:
 
 private:
 	GLuint _id;
-	GLenum _unit;
+	GLenum _unit = GL_TEXTURE0;
 	TextureType _type;
-
 	bool _valid = true;
 
 	static const string TEXTURE_FOLDER_PATH;

@@ -6,14 +6,15 @@
 class Mesh {
 public:
     // mesh data
-    Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures);
-    
+    Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture*> textures);
+    ~Mesh();
+
     void Draw(Shader& shader);
 
 private:
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<Texture> textures;
+    std::vector<Texture*> textures;
 
     static VertexAttributeLayout* attributeLayout;
 

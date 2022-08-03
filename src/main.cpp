@@ -14,6 +14,7 @@
 #include <constants.h>
 #include <renderer.h>
 #include <material.h>
+#include <model.h>
 
 using std::cout;
 using std::string;
@@ -190,6 +191,14 @@ int main()
 		return -1;
 	}
 
+	Shader modelShader("modelVertexShader.glsl", "modelFragmentShader.glsl");
+	if (!modelShader.isValid())
+	{
+		cout << "Failed to compile and link shaders. Terminating...\n";
+		glfwTerminate();
+		return -1;
+	}
+
 	glEnable(GL_DEPTH_TEST);
 
 	//
@@ -204,7 +213,7 @@ int main()
 	//		Load textures
 	//
 
-	Texture texture1("brick.jpg", GL_TEXTURE0, TextureType::TEXTURE);
+	Texture texture1("textures/brick.jpg", TextureType::TEXTURE);
 	if (!texture1.isValid())
 	{
 		cout << "Failed to load texture. Terminating...\n";
@@ -212,7 +221,7 @@ int main()
 		return -1;
 	}
 	texture1.setFiltering(GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
-	Texture texture2("brick_normal.jpg", GL_TEXTURE1, TextureType::NORMAL_MAP);
+	Texture texture2("textures/brick_normal.jpg", TextureType::NORMAL_MAP);
 	if (!texture2.isValid())
 	{
 		cout << "Failed to load texture. Terminating...\n";
@@ -318,6 +327,8 @@ int main()
 	objectShader.setVec3f("light.diffuse", DIFFUSE_LIGHT_COLOR);
 	objectShader.setVec3f("light.specular", SPECULAR_LIGHT_COLOR);
 
+	Model backpackModel("models/backpack/backpack.obj");
+
 	Renderer renderer;
 	renderer.setClearColor(0.09f, 0.09f, 0.09f);
 
@@ -328,6 +339,14 @@ int main()
 		double prevTime = curTime;
 		curTime = glfwGetTime();
 		float deltaTime = curTime - prevTime;
+
+		// for minimizing window
+		if (windowWidth == 0 || windowHeight == 0)
+		{
+			glfwSwapBuffers(window);
+			glfwPollEvents();
+			continue;
+		}
 
 		handleInput(window, deltaTime);
 
@@ -358,6 +377,11 @@ int main()
 		objectShader.setMat4f("projection", projectionMatrix);
 		objectShader.setMat3f("normalMatrix", normalMatrix);
 
+		modelShader.use();
+		modelShader.setMat4f("model", modelMatrix);
+		modelShader.setMat4f("view", viewMatrix);
+		modelShader.setMat4f("projection", projectionMatrix);
+
 		// setup lightsource cube
 		lightShader.use();
 		
@@ -377,9 +401,11 @@ int main()
 		objectShader.setVec3f("light.position", lightPosition);
 
 		// render cube
-		renderer.drawVertices(objectShader, vbo, vao);
+		//renderer.drawVertices(objectShader, vbo, vao);
 		//render lightsource cube
-		renderer.drawVertices(lightShader, vbo, vao);
+		//renderer.drawVertices(lightShader, vbo, vao);
+
+		backpackModel.Draw(modelShader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

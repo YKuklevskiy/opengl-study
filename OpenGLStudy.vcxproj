@@ -158,6 +158,7 @@
     <ClCompile Include="src\GLObjects\vertexAttributeLayout.cpp" />
     <ClCompile Include="src\material.cpp" />
     <ClCompile Include="src\mesh.cpp" />
+    <ClCompile Include="src\model.cpp" />
     <ClCompile Include="src\renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +167,8 @@
     <None Include="src\shaders\fragmentShader.glsl" />
     <None Include="src\shaders\lightFragmentShader.glsl" />
     <None Include="src\shaders\lightVertexShader.glsl" />
+    <None Include="src\shaders\modelFragmentShader.glsl" />
+    <None Include="src\shaders\modelVertexShader.glsl" />
     <None Include="src\shaders\vertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +185,7 @@
     <ClInclude Include="headers\GLObjects\vertexAttribute.h" />
     <ClInclude Include="headers\GLObjects\vertexAttributeLayout.h" />
     <ClInclude Include="headers\material.h" />
+    <ClInclude Include="headers\model.h" />
     <ClInclude Include="headers\renderer.h" />
     <ClInclude Include="Libraries\include\stb_image\stb_image.h" />
   </ItemGroup>
