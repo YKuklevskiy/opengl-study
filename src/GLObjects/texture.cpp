@@ -5,8 +5,8 @@
 
 const string Texture::TEXTURE_FOLDER_PATH = "textures/";
 
-Texture::Texture(string texturePath, GLenum unit)
-	: _unit(unit)
+Texture::Texture(string texturePath, GLenum unit, TextureType type)
+	: _unit(unit), _type(type)
 {
 	stbi_set_flip_vertically_on_load(true); // temporarily here, should actually be called just once before any of resources loading
 	auto* data = readImageFile(TEXTURE_FOLDER_PATH + texturePath);
@@ -42,9 +42,19 @@ void Texture::setFiltering(GLenum minifyingFilter, GLenum magnifyingFilter) cons
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magnifyingFilter);
 }
 
+void Texture::setUnit(GLenum unit)
+{
+	_unit = unit;
+}
+
 bool Texture::isValid() const
 {
 	return _valid;
+}
+
+TextureType Texture::getType() const
+{
+	return _type;
 }
 
 GLubyte* Texture::readImageFile(string fullTexturePath)

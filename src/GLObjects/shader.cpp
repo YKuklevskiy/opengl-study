@@ -66,6 +66,11 @@ void Shader::setVec3f(const string& const name, const glm::vec3& value) const
 	glUniform3f(glGetUniformLocation(_id, name.c_str()), value.x, value.y, value.z);
 }
 
+void Shader::setArrayInt(const string& const name, std::vector<GLint>& value) const
+{
+	glUniform1iv(glGetUniformLocation(_id, name.c_str()), value.size(), value.data());
+}
+
 GLuint Shader::getID() const
 {
 	return _id;

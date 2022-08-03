@@ -9,13 +9,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <GLObjects/GLObjects.h>
+
 #include <constants.h>
-#include <GLObjects/shader.h>
-#include <GLObjects/VBO.h>
-#include <GLObjects/VAO.h>
-#include <GLObjects/EBO.h>
-#include <GLObjects/texture.h>
-#include <GLObjects/camera.h>
 #include <renderer.h>
 #include <material.h>
 
@@ -182,7 +178,7 @@ int main()
 	//		Load textures
 	//
 
-	Texture texture1("brick.jpg", GL_TEXTURE0);
+	Texture texture1("brick.jpg", GL_TEXTURE0, TextureType::TEXTURE);
 	if (!texture1.isValid())
 	{
 		cout << "Failed to load texture. Terminating...\n";
@@ -190,7 +186,7 @@ int main()
 		return -1;
 	}
 	texture1.setFiltering(GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
-	Texture texture2("brick_normal.jpg", GL_TEXTURE1);
+	Texture texture2("brick_normal.jpg", GL_TEXTURE1, TextureType::NORMAL_MAP);
 	if (!texture2.isValid())
 	{
 		cout << "Failed to load texture. Terminating...\n";
@@ -205,7 +201,7 @@ int main()
 	//		Setup data buffer
 	//
 
-	GLfloat cubeVertexArray[] =
+	std::vector<GLfloat> cubeVertexArray =
 	{
 		// position			  texturecoords       normals
 		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,   0.0f, 0.0f, -1.0f,
@@ -251,7 +247,7 @@ int main()
 		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 1.0f, 0.0f
 	};
 
-	/*GLuint indices[] =
+	/*std::vector<GLuint> indices =
 	{
 		0, 1, 2
 	};*/

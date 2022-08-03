@@ -14,7 +14,7 @@ void Renderer::clear() const
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::drawVertices(Shader& shader, VBO& vbo, VAO& vao) const
+void Renderer::drawVertices(Shader& shader, VBO& vbo, VAO& vao)
 {
 	vao.bind();
 	vbo.bind();
@@ -25,7 +25,7 @@ void Renderer::drawVertices(Shader& shader, VBO& vbo, VAO& vao) const
 	glDrawArrays(GL_TRIANGLES, 0, size);
 }
 
-void Renderer::drawElements(Shader& shader, VBO& vbo, EBO& ebo, VAO& vao) const
+void Renderer::drawElements(Shader& shader, VBO& vbo, EBO& ebo, VAO& vao)
 {
 	vao.bind();
 	vbo.bind();
