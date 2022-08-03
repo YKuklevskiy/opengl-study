@@ -22,6 +22,21 @@ int windowHeight = 900;
 int windowWidth = 1200;
 Camera* boundCamera = nullptr;
 
+// from https://www.khronos.org/opengl/wiki/Example/OpenGL_Error_Testing_with_Message_Callbacks
+void GLAPIENTRY
+MessageCallback(GLenum source,
+	GLenum type,
+	GLuint id,
+	GLenum severity,
+	GLsizei length,
+	const GLchar* message,
+	const void* userParam)
+{
+	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+		(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+		type, severity, message);
+}
+
 void handleInput(GLFWwindow* window, float deltaTime)
 {
 	//
@@ -110,7 +125,7 @@ int main()
 		return -1;
 
 	// Flags and hints
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -142,6 +157,17 @@ int main()
 		return -1;
 	}
 	gladLoadGL();
+
+	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
+
+	// GL error logging setup
+#ifdef DEBUG
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(MessageCallback, 0);
+
+	// disable gl notifications
+	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE); 
+#endif 
 
 	//
 	//		Load shaders
