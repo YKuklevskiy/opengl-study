@@ -9,22 +9,34 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <GLObjects/GLObjects.h>
+
 #include <constants.h>
-#include <GLObjects/shader.h>
-#include <GLObjects/VBO.h>
-#include <GLObjects/VAO.h>
-#include <GLObjects/EBO.h>
-#include <GLObjects/texture.h>
-#include <GLObjects/camera.h>
 #include <renderer.h>
 #include <material.h>
+#include <model.h>
 
 using std::cout;
 using std::string;
 
-int windowHeight = 900;
-int windowWidth = 1200;
+int windowHeight = 780;
+int windowWidth = 1040;
 Camera* boundCamera = nullptr;
+
+// from https://www.khronos.org/opengl/wiki/Example/OpenGL_Error_Testing_with_Message_Callbacks
+void GLAPIENTRY
+MessageCallback(GLenum source,
+	GLenum type,
+	GLuint id,
+	GLenum severity,
+	GLsizei length,
+	const GLchar* message,
+	const void* userParam)
+{
+	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+		(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+		type, severity, message);
+}
 
 void handleInput(GLFWwindow* window, float deltaTime)
 {
@@ -114,7 +126,7 @@ int main()
 		return -1;
 
 	// Flags and hints
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -147,18 +159,24 @@ int main()
 	}
 	gladLoadGL();
 
+	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
+
+	// GL error logging setup
+#ifdef DEBUG
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(MessageCallback, 0);
+
+	// disable gl notifications
+	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE); 
+#endif 
+
+	// Culling
+	glEnable(GL_CULL_FACE);
+
+
 	//
 	//		Load shaders
 	//
-
-	Shader objectShader("vertexShader.glsl", "fragmentShader.glsl");
-	if (!objectShader.isValid())
-	{
-		cout << "Failed to compile and link shaders. Terminating...\n";
-		glfwTerminate();
-		return -1;
-	}
-	objectShader.use();
 
 	Shader lightShader("lightVertexShader.glsl", "lightFragmentShader.glsl");
 	if (!lightShader.isValid())
@@ -167,6 +185,18 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
+
+	Shader modelShader("modelVertexShader.glsl", "modelFragmentShader.glsl");
+	if (!modelShader.isValid())
+	{
+		cout << "Failed to compile and link shaders. Terminating...\n";
+		glfwTerminate();
+		return -1;
+	}
+	modelShader.use();
+	modelShader.setVec3f("light.ambient", AMBIENT_LIGHT_COLOR);
+	modelShader.setVec3f("light.diffuse", DIFFUSE_LIGHT_COLOR);
+	modelShader.setVec3f("light.specular", SPECULAR_LIGHT_COLOR);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -178,83 +208,59 @@ int main()
 	boundCamera->setSensitivity(SENSITIVITY);
 	boundCamera->setSpeed(CAMERA_SPEED);
 
-	//
-	//		Load textures
-	//
-
-	Texture texture1("brick.jpg", GL_TEXTURE0);
-	if (!texture1.isValid())
-	{
-		cout << "Failed to load texture. Terminating...\n";
-		glfwTerminate();
-		return -1;
-	}
-	texture1.setFiltering(GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
-	Texture texture2("brick_normal.jpg", GL_TEXTURE1);
-	if (!texture2.isValid())
-	{
-		cout << "Failed to load texture. Terminating...\n";
-		glfwTerminate();
-		return -1;
-	}
-	texture2.setFiltering(GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
-
 	/////// TODO Too much checking for validity, need to encapsulate all this setup stuff into Window class ///////
 
 	//
-	//		Setup data buffer
+	//		Setup light cube data buffer and load models
 	//
 
-	GLfloat cubeVertexArray[] =
+	std::vector<GLfloat> cubeVertexArray =
 	{
-		// position			  texturecoords       normals
-		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,   0.0f, 0.0f, -1.0f,
-		 0.5f, -0.5f, -0.5f,   1.0f, 0.0f,   0.0f, 0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f, 0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f, 0.0f, -1.0f,
-		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 0.0f, -1.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,   0.0f, 0.0f, -1.0f,
-							   			     
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, 0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, 0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 1.0f,   0.0f, 0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 1.0f,   0.0f, 0.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,   0.0f, 1.0f,   0.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, 0.0f, 1.0f,
-							   			     
-		-0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
-							   			     
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   1.0f, 0.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   1.0f, 0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   1.0f, 0.0f, 0.0f,
-							   			     
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   0.0f, -1.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,   1.0f, 1.0f,   0.0f, -1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, -1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, -1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, -1.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   0.0f, -1.0f, 0.0f,
-							   			     
-		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   0.0f, 1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,   0.0f, 0.0f,   0.0f, 1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 1.0f, 0.0f
+		// position
+		-0.5f, -0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		
+		-0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+		
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		
+		 0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f,  0.5f,  0.5f,
+		
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+		
+		-0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f
 	};
 
-	/*GLuint indices[] =
-	{
-		0, 1, 2
-	};*/
+	Model backpackModel("models/backpack/backpack.obj");
 
 	// Create and bind VAO (which will store VBO and attributes)
 	VAO vao;
@@ -265,15 +271,9 @@ int main()
 	vbo.bind();
 	vbo.bufferData(cubeVertexArray);
 
-	/*EBO ebo;
-	ebo.bind();
-	ebo.bufferData(indices);*/
-
 	// Setup vertex attributes
 	VertexAttributeLayout layout;
 	layout.AddAttribute<GLfloat>(3); // position
-	layout.AddAttribute<GLfloat>(2); // texCoords
-	layout.AddAttribute<GLfloat>(3); // normals
 	vao.setupVertexAttributes(layout);
 
 	//
@@ -281,20 +281,6 @@ int main()
 	//
 
 	vao.bind();
-	objectShader.use();
-	objectShader.setInt("_texture", 0);
-	objectShader.setInt("_normalTexture", 1);
-
-	Material material(&objectShader);
-	material.ambient = AMBIENT_COLOR;
-	material.diffuse = DIFFUSE_COLOR;
-	material.specular = SPECULAR_COLOR;
-	material.shininess = SHININESS;
-	material.setUniforms("material");
-
-	objectShader.setVec3f("light.ambient", AMBIENT_LIGHT_COLOR);
-	objectShader.setVec3f("light.diffuse", DIFFUSE_LIGHT_COLOR);
-	objectShader.setVec3f("light.specular", SPECULAR_LIGHT_COLOR);
 
 	Renderer renderer;
 	renderer.setClearColor(0.09f, 0.09f, 0.09f);
@@ -307,19 +293,29 @@ int main()
 		curTime = glfwGetTime();
 		float deltaTime = curTime - prevTime;
 
+		// for minimizing window
+		if (windowWidth == 0 || windowHeight == 0)
+		{
+			glfwSwapBuffers(window);
+			glfwPollEvents();
+			continue;
+		}
+
 		handleInput(window, deltaTime);
 
 		renderer.clear();
 
 		const float speedModifier = 0.5f;
 		float time = sin(curTime * speedModifier);
-		objectShader.use();
-		objectShader.setFloat("time", time * 0.5f + 0.5f);
 
+		// setup lightsource cube
+		lightShader.use();
 
-		// setup cube
 		glm::mat4 modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::rotate(modelMatrix, time, glm::normalize(glm::vec3(0.0f, 0.5f, 1.0f)));
+		modelMatrix = glm::rotate(modelMatrix, (float)curTime * 0.4f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
+		modelMatrix = glm::rotate(modelMatrix, (float)sin(curTime * 0.25f) * 0.33f, glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f)));
+		modelMatrix = glm::translate(modelMatrix, INITIAL_LIGHT_POSITION);
+		modelMatrix = glm::scale(modelMatrix, { 0.25f, 0.25f, 0.25f });
 
 		glm::mat4 viewMatrix = glm::mat4(1.0f);
 		glm::vec3 cameraPosition = boundCamera->getPosition();
@@ -328,36 +324,33 @@ int main()
 
 		glm::mat4 projectionMatrix = glm::perspective(glm::radians(FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
-		glm::mat3 normalMatrix = glm::mat3(viewMatrix * modelMatrix); // view space calculations
-		normalMatrix = glm::transpose(glm::inverse(normalMatrix));
-
-		objectShader.setMat4f("model", modelMatrix);
-		objectShader.setMat4f("view", viewMatrix);
-		objectShader.setMat4f("projection", projectionMatrix);
-		objectShader.setMat3f("normalMatrix", normalMatrix);
-
-		// setup lightsource cube
-		lightShader.use();
-		
-		modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::rotate(modelMatrix, (float)curTime * 0.8f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
-		modelMatrix = glm::rotate(modelMatrix, (float)sin(curTime * 0.5f) * 0.33f, glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f)));
-		modelMatrix = glm::translate(modelMatrix, INITIAL_LIGHT_POSITION);
-		modelMatrix = glm::scale(modelMatrix, { 0.25f, 0.25f, 0.25f });
+		glm::vec3 lightPosition = viewMatrix * modelMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); // view space calc
 
 		lightShader.setMat4f("model", modelMatrix);
 		lightShader.setMat4f("view", viewMatrix);
 		lightShader.setMat4f("projection", projectionMatrix);
 
-		glm::vec3 lightPosition = viewMatrix * modelMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); // view space calc
-
-		objectShader.use();
-		objectShader.setVec3f("light.position", lightPosition);
-
-		// render cube
-		renderer.drawVertices(objectShader, vbo, vao);
 		//render lightsource cube
 		renderer.drawVertices(lightShader, vbo, vao);
+
+		// setup light cube
+		modelShader.use();
+
+		modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::rotate(modelMatrix, time, glm::normalize(glm::vec3(0.0f, 0.5f, 1.0f)));
+
+		glm::mat3 normalMatrix = glm::mat3(viewMatrix * modelMatrix); // view space calculations
+		normalMatrix = glm::transpose(glm::inverse(normalMatrix));
+
+		modelShader.setMat4f("model", modelMatrix);
+		modelShader.setMat4f("view", viewMatrix);
+		modelShader.setMat4f("projection", projectionMatrix);
+		modelShader.setMat3f("normalMatrix", normalMatrix);
+
+		modelShader.setVec3f("light.position", lightPosition);
+
+		//render backpack
+		backpackModel.Draw(modelShader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

@@ -7,8 +7,8 @@ const float INITIAL_YAW = -90.0f;
 const float INITIAL_PITCH = 0.0f;
 const float SENSITIVITY = 0.25f;
 const float CAMERA_SPEED = 4.0f;
-const glm::vec3 INITIAL_CAMERA_POSITION(0.0f, 0.0f, 2.0f);
-const glm::vec3 INITIAL_LIGHT_POSITION(0.0f, 0.0f, 2.0f);
+const glm::vec3 INITIAL_CAMERA_POSITION(0.0f, 0.0f, 5.0f);
+const glm::vec3 INITIAL_LIGHT_POSITION(0.0f, 0.0f, 3.0f);
 
 // chrome
 const glm::vec3 AMBIENT_COLOR(0.25f, 0.25f, 0.25f);

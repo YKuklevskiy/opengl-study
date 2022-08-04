@@ -48,12 +48,22 @@
     <ClCompile Include="src\material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\vertexShader.glsl" />
     <None Include="src\shaders\fragmentShader.glsl" />
     <None Include="src\shaders\lightFragmentShader.glsl" />
     <None Include="src\shaders\lightVertexShader.glsl" />
+    <None Include="Libraries\dll\assimp-vc143-mtd.dll" />
+    <None Include="Libraries\dll\assimp-vc143-mt.dll" />
+    <None Include="src\shaders\modelFragmentShader.glsl" />
+    <None Include="src\shaders\modelVertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\GLObjects\shader.h">
@@ -90,6 +100,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\GLObjects\vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\GLObjects\GLObjects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

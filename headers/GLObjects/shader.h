@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include <string>
+#include <vector>
 
 using std::string;
 
@@ -24,6 +25,8 @@ public:
 	void setMat3f(const string& const name, const glm::mat3& value) const;
 	void setMat4f(const string& const name, const glm::mat4& value) const;
 	void setVec3f(const string& const name, const glm::vec3& value) const;
+
+	void setArrayInt(const string& const name, std::vector<GLint>& value) const;
 
 	GLuint getID() const;
 	bool isValid() const;

@@ -3,13 +3,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image/stb_image.h>
 
-const string Texture::TEXTURE_FOLDER_PATH = "textures/";
-
-Texture::Texture(string texturePath, GLenum unit)
-	: _unit(unit)
+Texture::Texture(string fullTexturePath, TextureType type)
+	: _type(type)
 {
 	stbi_set_flip_vertically_on_load(true); // temporarily here, should actually be called just once before any of resources loading
-	auto* data = readImageFile(TEXTURE_FOLDER_PATH + texturePath);
+	auto* data = readImageFile(fullTexturePath);
 
 	if (_valid)
 	{
@@ -42,9 +40,19 @@ void Texture::setFiltering(GLenum minifyingFilter, GLenum magnifyingFilter) cons
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magnifyingFilter);
 }
 
+void Texture::setUnit(GLenum unit)
+{
+	_unit = unit;
+}
+
 bool Texture::isValid() const
 {
 	return _valid;
+}
+
+TextureType Texture::getType() const
+{
+	return _type;
 }
 
 GLubyte* Texture::readImageFile(string fullTexturePath)
@@ -53,11 +61,11 @@ GLubyte* Texture::readImageFile(string fullTexturePath)
 
 	if (textureData) // generate texture
 	{
-		cout << "SUCCESS: SUCCESSFULLY READ TEXTURE \n";
+		cout << "SUCCESS: SUCCESSFULLY READ TEXTURE \"" << fullTexturePath << "\"\n";
 	}
 	else
 	{
-		cout << "ERROR: COULD NOT READ TEXTURE FILE\n";
+		cout << "ERROR: COULD NOT READ TEXTURE FILE \"" << fullTexturePath << "\"\n";
 		_valid = false;
 	}
 
