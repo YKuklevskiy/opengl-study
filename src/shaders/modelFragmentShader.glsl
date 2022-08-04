@@ -23,7 +23,7 @@ uniform Material material;
 uniform Light light;
 
 const float ambient = 0.15f;
-const float shininess = 32f;
+const float shininess = 32;
 
 void main()
 {    
