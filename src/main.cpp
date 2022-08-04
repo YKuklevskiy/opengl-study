@@ -19,8 +19,8 @@
 using std::cout;
 using std::string;
 
-int windowHeight = 900;
-int windowWidth = 1200;
+int windowHeight = 780;
+int windowWidth = 1040;
 Camera* boundCamera = nullptr;
 
 // from https://www.khronos.org/opengl/wiki/Example/OpenGL_Error_Testing_with_Message_Callbacks
@@ -170,18 +170,13 @@ int main()
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE); 
 #endif 
 
+	// Culling
+	glEnable(GL_CULL_FACE);
+
+
 	//
 	//		Load shaders
 	//
-
-	Shader objectShader("vertexShader.glsl", "fragmentShader.glsl");
-	if (!objectShader.isValid())
-	{
-		cout << "Failed to compile and link shaders. Terminating...\n";
-		glfwTerminate();
-		return -1;
-	}
-	objectShader.use();
 
 	Shader lightShader("lightVertexShader.glsl", "lightFragmentShader.glsl");
 	if (!lightShader.isValid())
@@ -198,6 +193,10 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
+	modelShader.use();
+	modelShader.setVec3f("light.ambient", AMBIENT_LIGHT_COLOR);
+	modelShader.setVec3f("light.diffuse", DIFFUSE_LIGHT_COLOR);
+	modelShader.setVec3f("light.specular", SPECULAR_LIGHT_COLOR);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -209,83 +208,59 @@ int main()
 	boundCamera->setSensitivity(SENSITIVITY);
 	boundCamera->setSpeed(CAMERA_SPEED);
 
-	//
-	//		Load textures
-	//
-
-	Texture texture1("textures/brick.jpg", TextureType::TEXTURE);
-	if (!texture1.isValid())
-	{
-		cout << "Failed to load texture. Terminating...\n";
-		glfwTerminate();
-		return -1;
-	}
-	texture1.setFiltering(GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
-	Texture texture2("textures/brick_normal.jpg", TextureType::NORMAL_MAP);
-	if (!texture2.isValid())
-	{
-		cout << "Failed to load texture. Terminating...\n";
-		glfwTerminate();
-		return -1;
-	}
-	texture2.setFiltering(GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
-
 	/////// TODO Too much checking for validity, need to encapsulate all this setup stuff into Window class ///////
 
 	//
-	//		Setup data buffer
+	//		Setup light cube data buffer and load models
 	//
 
 	std::vector<GLfloat> cubeVertexArray =
 	{
-		// position			  texturecoords       normals
-		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,   0.0f, 0.0f, -1.0f,
-		 0.5f, -0.5f, -0.5f,   1.0f, 0.0f,   0.0f, 0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f, 0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f, 0.0f, -1.0f,
-		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 0.0f, -1.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,   0.0f, 0.0f, -1.0f,
-							   			     
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, 0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, 0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 1.0f,   0.0f, 0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 1.0f,   0.0f, 0.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,   0.0f, 1.0f,   0.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, 0.0f, 1.0f,
-							   			     
-		-0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   -1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   -1.0f, 0.0f, 0.0f,
-							   			     
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   1.0f, 0.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   1.0f, 0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   1.0f, 0.0f, 0.0f,
-							   			     
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   0.0f, -1.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,   1.0f, 1.0f,   0.0f, -1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, -1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, -1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, -1.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   0.0f, -1.0f, 0.0f,
-							   			     
-		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   0.0f, 1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,   0.0f, 0.0f,   0.0f, 1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f, 1.0f, 0.0f
+		// position
+		-0.5f, -0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		
+		-0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+		
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		
+		 0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f,  0.5f,  0.5f,
+		
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+		
+		-0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f
 	};
 
-	/*std::vector<GLuint> indices =
-	{
-		0, 1, 2
-	};*/
+	Model backpackModel("models/backpack/backpack.obj");
 
 	// Create and bind VAO (which will store VBO and attributes)
 	VAO vao;
@@ -296,15 +271,9 @@ int main()
 	vbo.bind();
 	vbo.bufferData(cubeVertexArray);
 
-	/*EBO ebo;
-	ebo.bind();
-	ebo.bufferData(indices);*/
-
 	// Setup vertex attributes
 	VertexAttributeLayout layout;
 	layout.AddAttribute<GLfloat>(3); // position
-	layout.AddAttribute<GLfloat>(2); // texCoords
-	layout.AddAttribute<GLfloat>(3); // normals
 	vao.setupVertexAttributes(layout);
 
 	//
@@ -312,22 +281,6 @@ int main()
 	//
 
 	vao.bind();
-	objectShader.use();
-	objectShader.setInt("_texture", 0);
-	objectShader.setInt("_normalTexture", 1);
-
-	Material material(&objectShader);
-	material.ambient = AMBIENT_COLOR;
-	material.diffuse = DIFFUSE_COLOR;
-	material.specular = SPECULAR_COLOR;
-	material.shininess = SHININESS;
-	material.setUniforms("material");
-
-	objectShader.setVec3f("light.ambient", AMBIENT_LIGHT_COLOR);
-	objectShader.setVec3f("light.diffuse", DIFFUSE_LIGHT_COLOR);
-	objectShader.setVec3f("light.specular", SPECULAR_LIGHT_COLOR);
-
-	Model backpackModel("models/backpack/backpack.obj");
 
 	Renderer renderer;
 	renderer.setClearColor(0.09f, 0.09f, 0.09f);
@@ -354,13 +307,15 @@ int main()
 
 		const float speedModifier = 0.5f;
 		float time = sin(curTime * speedModifier);
-		objectShader.use();
-		objectShader.setFloat("time", time * 0.5f + 0.5f);
 
+		// setup lightsource cube
+		lightShader.use();
 
-		// setup cube
 		glm::mat4 modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::rotate(modelMatrix, time, glm::normalize(glm::vec3(0.0f, 0.5f, 1.0f)));
+		modelMatrix = glm::rotate(modelMatrix, (float)curTime * 0.4f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
+		modelMatrix = glm::rotate(modelMatrix, (float)sin(curTime * 0.25f) * 0.33f, glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f)));
+		modelMatrix = glm::translate(modelMatrix, INITIAL_LIGHT_POSITION);
+		modelMatrix = glm::scale(modelMatrix, { 0.25f, 0.25f, 0.25f });
 
 		glm::mat4 viewMatrix = glm::mat4(1.0f);
 		glm::vec3 cameraPosition = boundCamera->getPosition();
@@ -369,42 +324,32 @@ int main()
 
 		glm::mat4 projectionMatrix = glm::perspective(glm::radians(FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
-		glm::mat3 normalMatrix = glm::mat3(viewMatrix * modelMatrix); // view space calculations
-		normalMatrix = glm::transpose(glm::inverse(normalMatrix));
-
-		objectShader.setMat4f("model", modelMatrix);
-		objectShader.setMat4f("view", viewMatrix);
-		objectShader.setMat4f("projection", projectionMatrix);
-		objectShader.setMat3f("normalMatrix", normalMatrix);
-
-		modelShader.use();
-		modelShader.setMat4f("model", modelMatrix);
-		modelShader.setMat4f("view", viewMatrix);
-		modelShader.setMat4f("projection", projectionMatrix);
-
-		// setup lightsource cube
-		lightShader.use();
-		
-		modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::rotate(modelMatrix, (float)curTime * 0.8f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
-		modelMatrix = glm::rotate(modelMatrix, (float)sin(curTime * 0.5f) * 0.33f, glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f)));
-		modelMatrix = glm::translate(modelMatrix, INITIAL_LIGHT_POSITION);
-		modelMatrix = glm::scale(modelMatrix, { 0.25f, 0.25f, 0.25f });
+		glm::vec3 lightPosition = viewMatrix * modelMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); // view space calc
 
 		lightShader.setMat4f("model", modelMatrix);
 		lightShader.setMat4f("view", viewMatrix);
 		lightShader.setMat4f("projection", projectionMatrix);
 
-		glm::vec3 lightPosition = viewMatrix * modelMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); // view space calc
-
-		objectShader.use();
-		objectShader.setVec3f("light.position", lightPosition);
-
-		// render cube
-		//renderer.drawVertices(objectShader, vbo, vao);
 		//render lightsource cube
-		//renderer.drawVertices(lightShader, vbo, vao);
+		renderer.drawVertices(lightShader, vbo, vao);
 
+		// setup light cube
+		modelShader.use();
+
+		modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::rotate(modelMatrix, time, glm::normalize(glm::vec3(0.0f, 0.5f, 1.0f)));
+
+		glm::mat3 normalMatrix = glm::mat3(viewMatrix * modelMatrix); // view space calculations
+		normalMatrix = glm::transpose(glm::inverse(normalMatrix));
+
+		modelShader.setMat4f("model", modelMatrix);
+		modelShader.setMat4f("view", viewMatrix);
+		modelShader.setMat4f("projection", projectionMatrix);
+		modelShader.setMat3f("normalMatrix", normalMatrix);
+
+		modelShader.setVec3f("light.position", lightPosition);
+
+		//render backpack
 		backpackModel.Draw(modelShader);
 
 		glfwSwapBuffers(window);
