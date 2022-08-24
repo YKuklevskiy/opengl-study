@@ -10,11 +10,8 @@ public:
 	void handleMovement(glm::vec3 offset, float speedModifier = 1.0f);
 	void handleRotation(float xoffset, float yoffset, float sensitivityModifier = 1.0f);
 
-	const glm::vec3& const getPosition() const;
+	const glm::vec3& getPosition() const;
 	const glm::vec3 getDirectionVector() const;
-
-	void enableMovement();
-	void disableMovement();
 
 	const float getYaw() const;
 
@@ -25,6 +22,9 @@ public:
 
 	void setSensitivity(float sensitivity);
 	const float getSensitivity() const;
+
+	void enableMovement();
+	void disableMovement();
 
 private:
 	glm::vec3 _position;

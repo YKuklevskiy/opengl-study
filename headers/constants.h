@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+const float TIME_SPEED_MODIFIER = 0.5f;
 const float FOV = 75.0f;
 const float INITIAL_YAW = -90.0f;
 const float INITIAL_PITCH = 0.0f;

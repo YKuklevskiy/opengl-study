@@ -25,6 +25,16 @@ uniform Light light;
 const float ambient = 0.15f;
 const float shininess = 32;
 
+// 32 units
+const float attenuation_c = 1.0f;
+const float attenuation_l = 0.14f;
+const float attenuation_q = 0.07f;
+
+float pointLightAttenuation(float distance)
+{
+    return 1.0f / (attenuation_c + attenuation_l * distance + attenuation_q * distance * distance);
+}
+
 void main()
 {    
     vec4 tex = texture(material.texture_diffuse[0], TexCoords);
@@ -40,6 +50,7 @@ void main()
     vec3 specularLight = light.specular * vec3(specularTex) * pow(max(0.0, dot(viewToPos, reflectLightVec)), shininess);
 
     vec3 resultLighting = ambientLight + diffuseLight + specularLight;
+    resultLighting *= pointLightAttenuation(length(position-light.position));
 
     FragColor = vec4(resultLighting, 1.0f);
 }

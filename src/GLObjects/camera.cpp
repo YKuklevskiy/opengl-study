@@ -39,29 +39,22 @@ void Camera::handleRotation(float xoffset, float yoffset, float sensitivityModif
 	_pitch = clamp(_pitch + yoffset * modifier, -pitchBorder, pitchBorder);
 }
 
-const glm::vec3& const Camera::getPosition() const
+const glm::vec3& Camera::getPosition() const
 {
 	return _position;
 }
 
 const glm::vec3 Camera::getDirectionVector() const
 {
+	float yaw_r = glm::radians(_yaw);
+	float pitch_r = glm::radians(_pitch);
+
 	return glm::normalize(
 		glm::vec3(
-		cos(glm::radians(_yaw)) * cos(glm::radians(_pitch)),
-		sin(glm::radians(_pitch)),
-		sin(glm::radians(_yaw)) * cos(glm::radians(_pitch))
+		cos(yaw_r) * cos(pitch_r),
+		sin(pitch_r),
+		sin(yaw_r) * cos(pitch_r)
 	));
-}
-
-void Camera::enableMovement()
-{
-	_controlsEnabled = true;
-}
-
-void Camera::disableMovement()
-{
-	_controlsEnabled = false;
 }
 
 #pragma region Parameter Getters and Setters
@@ -95,3 +88,13 @@ const float Camera::getSensitivity() const
 	return _sensitivity;
 }
 #pragma endregion
+
+void Camera::enableMovement()
+{
+	_controlsEnabled = true;
+}
+
+void Camera::disableMovement()
+{
+	_controlsEnabled = false;
+}

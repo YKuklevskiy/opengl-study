@@ -11,7 +11,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vecto
     {
         attributeLayout = new VertexAttributeLayout();
 
-        // this exact order of attributes is specified by order of attributes in the Vertex struct (vertex.h)
+        // NOTE: this exact order of attributes is specified by order of attributes in the Vertex struct (vertex.h)
         attributeLayout->AddAttribute<GLfloat>(3); // position
         attributeLayout->AddAttribute<GLfloat>(2); // texCoords
         attributeLayout->AddAttribute<GLfloat>(3); // normals
@@ -22,6 +22,21 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vecto
     this->textures = textures;
 
     setupMesh();
+}
+
+void Mesh::setupMesh()
+{
+    vao.bind();
+
+    vbo.bind();
+    vbo.bufferData(vertices);
+
+    ebo.bind();
+    ebo.bufferData(indices);
+
+    vao.setupVertexAttributes(*attributeLayout);
+
+    vao.unbind();
 }
 
 Mesh::~Mesh()
@@ -66,19 +81,4 @@ void Mesh::Draw(Shader& shader)
 
     // draw mesh
     Renderer::drawElements(shader, vbo, ebo, vao);
-}
-
-void Mesh::setupMesh()
-{
-    vao.bind();
-
-    vbo.bind();
-    vbo.bufferData(vertices);
-
-    ebo.bind();
-    ebo.bufferData(indices);
-
-    vao.setupVertexAttributes(*attributeLayout);
-
-    vao.unbind();
 }

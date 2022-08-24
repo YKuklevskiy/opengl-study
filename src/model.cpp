@@ -8,7 +8,14 @@
 
 Model::Model(string path)
 {
+	cout << "LOADING MODEL from \"" << path << "\"...\n";
+
 	loadModel(path);
+
+	if(isValid)
+		cout << "SUCCESS: MODEL LOADED\n";
+	else
+		cout << "ERROR: COULD NOT LOAD MODEL\n";
 }
 
 Model::~Model()

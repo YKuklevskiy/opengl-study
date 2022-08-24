@@ -25,13 +25,7 @@ Camera* boundCamera = nullptr;
 
 // from https://www.khronos.org/opengl/wiki/Example/OpenGL_Error_Testing_with_Message_Callbacks
 void GLAPIENTRY
-MessageCallback(GLenum source,
-	GLenum type,
-	GLuint id,
-	GLenum severity,
-	GLsizei length,
-	const GLchar* message,
-	const void* userParam)
+MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
 	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
 		(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
@@ -79,13 +73,13 @@ void handleInput(GLFWwindow* window, float deltaTime)
 		velocity.z -= 1;
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		velocity.x -= 1;
-	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		velocity.x += 1;
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		velocity.x -= 1;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
@@ -99,6 +93,8 @@ void handleInput(GLFWwindow* window, float deltaTime)
 
 	boundCamera->handleMovement(velocity * deltaTime);
 }
+
+#pragma region CallbackFunctions
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
@@ -120,19 +116,17 @@ void mouseMoveCallback(GLFWwindow* window, double xpos, double ypos)
 	lastMouseY = ypos;
 }
 
+#pragma endregion
+
+
 int main()
 {
 	if (glfwInit() == GLFW_FALSE)
 		return -1;
 
-	// Flags and hints
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	//
-	//		Create the window and make it's context current, load glad
-	//
 
 	GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "OpenGLStudy", NULL, NULL);
 	if (window == NULL)
@@ -143,11 +137,11 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 
-	// enabling raw mouse input
+	// enable raw mouse input
 	if (glfwRawMouseMotionSupported())
 		glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
-	// binding callback functions
+	// bind callback functions
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	glfwSetCursorPosCallback(window, mouseMoveCallback);
 
@@ -170,12 +164,12 @@ int main()
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE); 
 #endif 
 
-	// Culling
+	// culling and depth buffer
 	glEnable(GL_CULL_FACE);
-
+	glEnable(GL_DEPTH_TEST);
 
 	//
-	//		Load shaders
+	//		SHADERS
 	//
 
 	Shader lightShader("lightVertexShader.glsl", "lightFragmentShader.glsl");
@@ -198,17 +192,9 @@ int main()
 	modelShader.setVec3f("light.diffuse", DIFFUSE_LIGHT_COLOR);
 	modelShader.setVec3f("light.specular", SPECULAR_LIGHT_COLOR);
 
-	glEnable(GL_DEPTH_TEST);
-
-	//
-	//		Setup camera
-	//
-
 	boundCamera = new Camera(INITIAL_CAMERA_POSITION, INITIAL_YAW, INITIAL_PITCH);
 	boundCamera->setSensitivity(SENSITIVITY);
 	boundCamera->setSpeed(CAMERA_SPEED);
-
-	/////// TODO Too much checking for validity, need to encapsulate all this setup stuff into Window class ///////
 
 	//
 	//		Setup light cube data buffer and load models
@@ -289,6 +275,8 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
+		renderer.clear();
+
 		double prevTime = curTime;
 		curTime = glfwGetTime();
 		float deltaTime = curTime - prevTime;
@@ -303,10 +291,7 @@ int main()
 
 		handleInput(window, deltaTime);
 
-		renderer.clear();
-
-		const float speedModifier = 0.5f;
-		float time = sin(curTime * speedModifier);
+		float time = sin(curTime * TIME_SPEED_MODIFIER);
 
 		// setup lightsource cube
 		lightShader.use();
@@ -315,7 +300,7 @@ int main()
 		modelMatrix = glm::rotate(modelMatrix, (float)curTime * 0.4f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
 		modelMatrix = glm::rotate(modelMatrix, (float)sin(curTime * 0.25f) * 0.33f, glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f)));
 		modelMatrix = glm::translate(modelMatrix, INITIAL_LIGHT_POSITION);
-		modelMatrix = glm::scale(modelMatrix, { 0.25f, 0.25f, 0.25f });
+		modelMatrix = glm::scale(modelMatrix, { 0.5f, 0.5f, 0.5f });
 
 		glm::mat4 viewMatrix = glm::mat4(1.0f);
 		glm::vec3 cameraPosition = boundCamera->getPosition();
@@ -333,13 +318,15 @@ int main()
 		//render lightsource cube
 		renderer.drawVertices(lightShader, vbo, vao);
 
-		// setup light cube
+		// setup backpack
 		modelShader.use();
 
 		modelMatrix = glm::mat4(1.0f);
 		modelMatrix = glm::rotate(modelMatrix, time, glm::normalize(glm::vec3(0.0f, 0.5f, 1.0f)));
 
-		glm::mat3 normalMatrix = glm::mat3(viewMatrix * modelMatrix); // view space calculations
+		// NOTE: calculations are done in view space
+
+		glm::mat3 normalMatrix = glm::mat3(viewMatrix * modelMatrix); 
 		normalMatrix = glm::transpose(glm::inverse(normalMatrix));
 
 		modelShader.setMat4f("model", modelMatrix);
