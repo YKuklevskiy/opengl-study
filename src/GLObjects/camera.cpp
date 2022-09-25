@@ -5,10 +5,8 @@
 Camera::Camera(glm::vec3 initialPosition, float initialYaw, float initialPitch)
 	:_position(initialPosition), _yaw(initialYaw), _pitch(initialPitch) { }
 
-void Camera::handleMovement(glm::vec3 offset, float speedModifier)
+void Camera::handleMovement(glm::vec3 offset, double speedModifier)
 {
-	if (!_controlsEnabled) return;
-
 	float modifier = _speed * speedModifier;
 
 	// transform offset to be relative to camera
@@ -27,16 +25,14 @@ float clamp(float value, float leftBorder, float rightBorder)
 		((value > rightBorder) ? rightBorder : value);
 }
 
-void Camera::handleRotation(float xoffset, float yoffset, float sensitivityModifier)
+void Camera::handleRotation(const MouseInfo& mouse, double sensitivityModifier)
 {
-	if (!_controlsEnabled) return;
-
 	const float pitchBorder = 88.0f;
 
 	float modifier = _sensitivity * sensitivityModifier;
 
-	_yaw = _yaw + xoffset * modifier;
-	_pitch = clamp(_pitch + yoffset * modifier, -pitchBorder, pitchBorder);
+	_yaw = _yaw + mouse.frameMouseOffsetX * modifier;
+	_pitch = clamp(_pitch + mouse.frameMouseOffsetY * modifier, -pitchBorder, pitchBorder);
 }
 
 const glm::vec3& Camera::getPosition() const
@@ -88,13 +84,3 @@ const float Camera::getSensitivity() const
 	return _sensitivity;
 }
 #pragma endregion
-
-void Camera::enableMovement()
-{
-	_controlsEnabled = true;
-}
-
-void Camera::disableMovement()
-{
-	_controlsEnabled = false;
-}

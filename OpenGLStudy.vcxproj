@@ -100,7 +100,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4227;</DisableSpecificWarnings>
-      <PreprocessorDefinitions>DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLFW_INCLUDE_NONE;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,6 +134,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4227;</DisableSpecificWarnings>
+      <PreprocessorDefinitions>GLFW_INCLUDE_NONE;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,6 +148,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\gladLoader.cpp" />
+    <ClCompile Include="src\glfwwindow.cpp" />
     <ClCompile Include="src\GLObjects\camera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\GLObjects\EBO.cpp" />
@@ -159,6 +162,7 @@
     <ClCompile Include="src\material.cpp" />
     <ClCompile Include="src\mesh.cpp" />
     <ClCompile Include="src\model.cpp" />
+    <ClCompile Include="src\OpenGLView.cpp" />
     <ClCompile Include="src\renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +177,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\constants.h" />
+    <ClInclude Include="headers\gladLoader.h" />
+    <ClInclude Include="headers\glfwmouseinfo.h" />
+    <ClInclude Include="headers\glfwwindow.h" />
     <ClInclude Include="headers\GLObjects\camera.h" />
     <ClInclude Include="headers\GLObjects\EBO.h" />
     <ClInclude Include="headers\GLObjects\GLObjects.h" />
@@ -186,6 +193,7 @@
     <ClInclude Include="headers\GLObjects\vertexAttributeLayout.h" />
     <ClInclude Include="headers\material.h" />
     <ClInclude Include="headers\model.h" />
+    <ClInclude Include="headers\OpenGLView.h" />
     <ClInclude Include="headers\renderer.h" />
     <ClInclude Include="Libraries\include\stb_image\stb_image.h" />
   </ItemGroup>

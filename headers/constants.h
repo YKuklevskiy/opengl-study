@@ -2,6 +2,9 @@
 
 #include <glm/glm.hpp>
 
+const int WINDOW_WIDTH = 1040;
+const int WINDOW_HEIGHT = 780;
+
 const float TIME_SPEED_MODIFIER = 0.5f;
 const float FOV = 75.0f;
 const float INITIAL_YAW = -90.0f;
