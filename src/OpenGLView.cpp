@@ -19,6 +19,11 @@ inline void OpenGLView::SetDepthBuffer(bool isDepthBufferEnabled)
 		glDisable(GL_DEPTH_TEST);
 }
 
+void OpenGLView::SetParentWindow(std::shared_ptr<Window> window)
+{
+	parentWindow = std::weak_ptr<Window>(window);
+}
+
 const std::shared_ptr<Camera> OpenGLView::GetBoundCamera() const
 {
 	return boundCamera;

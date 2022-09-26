@@ -1,5 +1,6 @@
 #include <glfwwindow.h>
 #include <memory>
+#include <OpenGLView.h>
 
 void Window::Update(float deltaTime)
 {
@@ -89,7 +90,8 @@ void Window::makeContextCurrent()
 
 void Window::initView()
 {
-	boundView = std::make_shared<OpenGLView>(this);
+	boundView = std::make_shared<OpenGLView>();
+	boundView->SetParentWindow(getSharedPointerFromThis());
 }
 
 void Window::terminateWindow(const std::string&& message)
@@ -108,4 +110,9 @@ void Window::resetMouseOffset()
 {
 	mouse.frameMouseOffsetX = 0;
 	mouse.frameMouseOffsetY = 0;
+}
+
+std::shared_ptr<Window> Window::getSharedPointerFromThis()
+{
+	return shared_from_this();
 }

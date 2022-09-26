@@ -5,12 +5,12 @@
 #include <glfwmouseinfo.h>
 
 struct GLFWwindow;
+class Window;
 
 class OpenGLView
 {
 public:
-	inline OpenGLView(std::weak_ptr<class Window> window)
-		: parentWindow(window)
+	inline OpenGLView()
 	{
 		setDefaultParameters();
 		initDefaultCamera();
@@ -23,6 +23,8 @@ public:
 	{
 		handleInput(mouse, deltaTime);
 	}
+
+	void SetParentWindow(std::shared_ptr<Window> window);
 
 	const std::shared_ptr<Camera> GetBoundCamera() const;
 

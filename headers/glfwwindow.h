@@ -5,9 +5,10 @@
 #include <GLObjects/GLObjects.h>
 #include <GLFW/glfw3.h>
 #include <glfwmouseinfo.h>
-#include <OpenGLView.h>
 
-class Window
+class OpenGLView;
+
+class Window : public std::enable_shared_from_this<Window>
 {
 public:
 	Window(int windowWidth, int windowHeight)
@@ -72,4 +73,6 @@ private:
 
 	void updateMouseValuesAccordingToOffset();
 	void resetMouseOffset();
+
+	std::shared_ptr<Window> getSharedPointerFromThis();
 };
