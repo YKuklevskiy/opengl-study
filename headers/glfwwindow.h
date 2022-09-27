@@ -8,36 +8,30 @@
 
 class OpenGLView;
 
+
+/// <summary>
+/// 
+/// GLFW Window wrapper class. Does all the initialization stuff, and holds the OpenGLView (custom class) 
+/// bound to this window. 
+/// 
+/// Constructor initializes the window. View initialization is done by calling InitializeView();
+/// 
+/// </summary>
 class Window : public std::enable_shared_from_this<Window>
 {
 public:
-	Window(int windowWidth, int windowHeight)
+	inline Window(int windowWidth, int windowHeight)
 		: windowWidth(windowWidth), windowHeight(windowHeight)
 	{
-		if (!isGlfwInitialised())
-			return;
-		setContextHints();
-		createWindow();
-		makeContextCurrent();
-		GladLoader::LoadGlad();
-		initView();
+		initializeWindow();
 	}
 
-	inline void ResizeFramebufferCallback(GLFWwindow* window, int width, int height)
-	{
-		setWindowSize(width, height);
-		setViewportSize(width, height);
-	}
+	void InitializeView();
 
-	inline void MouseMoveCallback(GLFWwindow* window, int newXPosition, int newYPosition)
-	{
-		updateFrameMouseOffset(newXPosition, newYPosition);
-	}
+	void ResizeFramebufferCallback(GLFWwindow* window, int width, int height);
+	void MouseMoveCallback(GLFWwindow* window, int newXPosition, int newYPosition);
 
-	inline bool CheckIfWindowShouldClose()
-	{
-		return glfwWindowShouldClose(window);
-	}
+	bool CheckIfWindowShouldClose() const;
 
 	void Update(float deltaTime);
 
@@ -63,11 +57,11 @@ private:
 
 	void updateFrameMouseOffset(int newXPosition, int newYPosition);
 
+	void initializeWindow();
 	bool isGlfwInitialised();
 	void setContextHints();
 	void createWindow();
 	void makeContextCurrent();
-	void initView();
 
 	void terminateWindow(const std::string&& message);
 

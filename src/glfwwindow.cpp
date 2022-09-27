@@ -2,6 +2,28 @@
 #include <memory>
 #include <OpenGLView.h>
 
+void Window::InitializeView()
+{
+	boundView = std::make_shared<OpenGLView>();
+	boundView->SetParentWindow(getSharedPointerFromThis());
+}
+
+void Window::ResizeFramebufferCallback(GLFWwindow* window, int width, int height)
+{
+	setWindowSize(width, height);
+	setViewportSize(width, height);
+}
+
+void Window::MouseMoveCallback(GLFWwindow* window, int newXPosition, int newYPosition)
+{
+	updateFrameMouseOffset(newXPosition, newYPosition);
+}
+
+bool Window::CheckIfWindowShouldClose() const
+{
+	return glfwWindowShouldClose(window);
+}
+
 void Window::Update(float deltaTime)
 {
 	updateMouseValuesAccordingToOffset(); // because we want to work with new mouse position for the new frame
@@ -57,10 +79,22 @@ void Window::setViewportSize(int width, int height)
 
 void Window::updateFrameMouseOffset(int newXPosition, int newYPosition)
 {
+	if (newYPosition > 10000)
+		return;
 	mouse.frameMouseOffsetX = newXPosition - mouse.previousFrameMouseX;
 
 	// inverted since y-coordinates range from bottom to top
 	mouse.frameMouseOffsetY = -(newYPosition - mouse.previousFrameMouseY);
+}
+
+void Window::initializeWindow()
+{
+	if (!isGlfwInitialised())
+		return;
+	setContextHints();
+	createWindow();
+	makeContextCurrent();
+	GladLoader::TryLoadGlad();
 }
 
 bool Window::isGlfwInitialised()
@@ -88,12 +122,6 @@ void Window::makeContextCurrent()
 	glfwMakeContextCurrent(window);
 }
 
-void Window::initView()
-{
-	boundView = std::make_shared<OpenGLView>();
-	boundView->SetParentWindow(getSharedPointerFromThis());
-}
-
 void Window::terminateWindow(const std::string&& message)
 {
 	cout << message + " Terminating...\n";
@@ -103,7 +131,7 @@ void Window::terminateWindow(const std::string&& message)
 void Window::updateMouseValuesAccordingToOffset()
 {
 	mouse.previousFrameMouseX += mouse.frameMouseOffsetX;
-	mouse.previousFrameMouseY += mouse.frameMouseOffsetY;
+	mouse.previousFrameMouseY -= mouse.frameMouseOffsetY; // minus because hmm
 }
 
 void Window::resetMouseOffset()

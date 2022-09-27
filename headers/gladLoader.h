@@ -7,14 +7,12 @@
 class GladLoader
 {
 public:
-	inline static void LoadGlad();
+	static void TryLoadGlad();
 	
 private:
-	inline static bool isGladLoaderAvailable();
-	
+	static bool isGladLoaderAvailable();
 
-	inline static void terminateWindow(const std::string&& message);
+	static void terminateWindow(const std::string&& message);
 	
-
-	inline static void load();
+	static void load();
 };

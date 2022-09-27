@@ -105,6 +105,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>glfw3.lib;assimp-vc143-mtd.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>LinkVerbose</ShowProgress>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d "$(ProjectDir)Libraries\dll\assimp-vc143-mtd.dll" "$(TargetDir)"</Command>
@@ -142,16 +143,17 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>glfw3.lib;assimp-vc143-mt.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <ShowProgress>LinkVerbose</ShowProgress>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d "$(ProjectDir)Libraries\dll\assimp-vc143-mt.dll" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\gladLoader.cpp" />
     <ClCompile Include="src\glfwwindow.cpp" />
     <ClCompile Include="src\GLObjects\camera.cpp" />
-    <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\GLObjects\EBO.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\GLObjects\shader.cpp" />

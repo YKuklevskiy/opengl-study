@@ -4,7 +4,6 @@
 #include <sstream>
 
 #include <glfwwindow.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -16,6 +15,11 @@
 #include <material.h>
 #include <model.h>
 
+/*
+
+Need to polish window and view classes, and abstract mouse work into MouseInfo (change name?) class
+
+*/
 
 using std::cout;
 using std::string;
@@ -31,68 +35,6 @@ MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei 
 		type, severity, message);
 }
 
-//void handleInput(GLFWwindow* window, float deltaTime)
-//{
-//	//
-//	// wireframe view
-//	//
-//
-//	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-//		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-//	else
-//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//	
-//	//
-//	// camera lookaround
-//	//
-//
-//	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-//	{
-//		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-//		boundCamera->enableMovement();
-//	}
-//	else
-//	{
-//		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-//		boundCamera->disableMovement();
-//	}
-//
-//	//
-//	// moving around the scene
-//	//
-//
-//	glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-//
-//	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-//	{
-//		velocity.z += 1;
-//	}
-//	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-//	{
-//		velocity.z -= 1;
-//	}
-//
-//	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-//	{
-//		velocity.x += 1;
-//	}
-//	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-//	{
-//		velocity.x -= 1;
-//	}
-//
-//	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-//	{
-//		velocity.y += 1;
-//	}
-//	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-//	{
-//		velocity.y -= 1;
-//	}
-//
-//	boundCamera->handleMovement(velocity * deltaTime);
-//}
-
 #pragma region CallbackBinds
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -107,38 +49,10 @@ void mouseMoveCallback(GLFWwindow* window, double xpos, double ypos)
 
 #pragma endregion
 
-
 int main()
 {
-	//if (glfwInit() == GLFW_FALSE)
-	//	return -1;
-
-	//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	//GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "OpenGLStudy", NULL, NULL);
-	//if (window == NULL)
-	//{
-	//	cout << "Failed to create a window. Terminating...\n";
-	//	glfwTerminate();
-	//	return -1;
-	//}
-	//glfwMakeContextCurrent(window);
-
-	//// enable raw mouse input
-	//if (glfwRawMouseMotionSupported())
-	//	glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-
-	//if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	//{
-	//	cout << "Failed to initialize GLAD. Terminating...\n";
-	//	glfwTerminate();
-	//	return -1;
-	//}
-	//gladLoadGL();
-
 	win_Window = std::make_shared<Window>(WINDOW_WIDTH, WINDOW_HEIGHT);
+	win_Window->InitializeView();
 
 	// bind callback functions
 	glfwSetFramebufferSizeCallback(win_Window->GetGLFWwindowInstance(), framebufferSizeCallback);
@@ -153,17 +67,9 @@ int main()
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE); 
 #endif 
 
-	// culling and depth buffer
-	//glEnable(GL_CULL_FACE);
-	//glEnable(GL_DEPTH_TEST);
-
 	//
 	//		SHADERS
 	//
-
-	//boundCamera = new Camera(INITIAL_CAMERA_POSITION, INITIAL_YAW, INITIAL_PITCH);
-	//boundCamera->setSensitivity(SENSITIVITY);
-	//boundCamera->setSpeed(CAMERA_SPEED);
 
 	Shader lightShader("lightVertexShader.glsl", "lightFragmentShader.glsl");
 	if (!lightShader.isValid())

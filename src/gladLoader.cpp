@@ -1,12 +1,12 @@
 #include <gladLoader.h>
 
-inline void GladLoader::LoadGlad()
+void GladLoader::TryLoadGlad()
 {
 	if (isGladLoaderAvailable)
 		load();
 }
 
-inline bool GladLoader::isGladLoaderAvailable()
+bool GladLoader::isGladLoaderAvailable()
 {
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -16,13 +16,13 @@ inline bool GladLoader::isGladLoaderAvailable()
 	return true;
 }
 
-inline void GladLoader::terminateWindow(const std::string&& message)
+void GladLoader::terminateWindow(const std::string&& message)
 {
 	std::cout << message + " Terminating...\n";
 	glfwTerminate();
 }
 
-inline void GladLoader::load()
+void GladLoader::load()
 {
 	gladLoadGL();
 }

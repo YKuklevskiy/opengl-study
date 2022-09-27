@@ -2,8 +2,8 @@
 
 struct MouseInfo
 {
-	double frameMouseOffsetX;
-	double frameMouseOffsetY;
-	double previousFrameMouseX;
-	double previousFrameMouseY;
+	double frameMouseOffsetX = 0;
+	double frameMouseOffsetY = 0;
+	double previousFrameMouseX = 0;
+	double previousFrameMouseY = 0;
 };
